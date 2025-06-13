@@ -12,11 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+            $table->id('id_utilisateur'); // Changer le nom de la clé primaire
+            $table->string('nom'); // Ajout du champ nom
+            $table->string('prenom'); // Ajout du champ prénom
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('telephone')->nullable(); // Ajout du champ téléphone
+            $table->date('date_inscription')->default(now()); // Ajout du champ date_inscription avec une valeur par défaut
+            $table->string('role')->default('admin'); // Ajout du champ role avec la valeur par défaut 'admin'
+            $table->timestamp('derniere_connexion')->nullable(); // Ajout du champ dernière connexion
+            $table->enum('statut_compte', ['actif', 'inactif'])->default('actif'); // Ajout du champ statut_compte
             $table->rememberToken();
             $table->timestamps();
         });
