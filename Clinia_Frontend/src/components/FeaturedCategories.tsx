@@ -1,4 +1,13 @@
-import { Hospital, Stethoscope, Microscope, Pill, ScanLine, PersonStanding, Ambulance } from "lucide-react";
+import {
+  Hospital,
+  Stethoscope,
+  Microscope,
+  Pill,
+  ScanLine,
+  PersonStanding,
+  Ambulance,
+  Syringe,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface FeaturedCategoriesProps {
@@ -6,7 +15,6 @@ interface FeaturedCategoriesProps {
 }
 
 const FeaturedCategories = ({ onCategorySelect }: FeaturedCategoriesProps) => {
-  // J'ai mis à jour les icônes et les noms pour plus de pertinence.
   const categories = [
     { icon: Hospital, name: "Hôpitaux", count: "1,234", color: "text-red-600", bgColor: "bg-red-100" },
     { icon: Stethoscope, name: "Cliniques", count: "567", color: "text-blue-600", bgColor: "bg-blue-100" },
@@ -15,6 +23,7 @@ const FeaturedCategories = ({ onCategorySelect }: FeaturedCategoriesProps) => {
     { icon: ScanLine, name: "Cabinets d'imagerie", count: "678", color: "text-purple-600", bgColor: "bg-purple-100" },
     { icon: PersonStanding, name: "Centres de rééducation", count: "234", color: "text-yellow-600", bgColor: "bg-yellow-100" },
     { icon: Ambulance, name: "Ambulances & Urgences", count: "123", color: "text-orange-600", bgColor: "bg-orange-100" },
+    { icon: Syringe, name: "Cabinets dentaires", count: "156", color: "text-pink-600", bgColor: "bg-pink-100" },
   ];
 
   return (
@@ -25,17 +34,13 @@ const FeaturedCategories = ({ onCategorySelect }: FeaturedCategoriesProps) => {
             Explorez par catégorie
           </h2>
           <p className="text-muted-foreground text-lg">
-            Trouvez rapidement l'établissement de santé qu'il vous faut
+            Trouvez rapidement l'établissement de santé que vous recherchez.
           </p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {/* Note: Pour un affichage parfait, il est mieux d'avoir un multiple de 4 ou 2 catégories. 
-              Avec 7 catégories, la dernière ligne aura un élément seul sur mobile et 3 sur grand écran.
-              Vous pourriez ajouter une 8ème catégorie comme "Opticiens" ou "Cabinets Dentaires".
-          */}
           {categories.map((category, index) => (
-            <Card 
+            <Card
               key={index}
               className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-2"
               onClick={() => onCategorySelect(category.name.toLowerCase())}

@@ -11,7 +11,7 @@ interface SearchResultsProps {
   category: string;
 }
 
-const SearchResults = ({ query, category }: SearchResultsProps) => {
+const ResultatsRecherches = ({ query, category }: SearchResultsProps) => {
   const [sortBy, setSortBy] = useState("rating");
   const [filterOpen, setFilterOpen] = useState(false);
 
@@ -172,4 +172,4 @@ const SearchResults = ({ query, category }: SearchResultsProps) => {
   );
 };
 
-export default SearchResults;
+export default ResultatsRecherches;

@@ -9,7 +9,7 @@ const Footer = () => {
           {/* Company Info */}
           <div>
             <h3 className="text-2xl font-bold mb-4">
-              Congo<span className="text-green-600">Finder</span>
+              CLI<span className="text-green-600">NIA</span>
             </h3>
             <p className="text-muted-foreground mb-4">
               La plateforme de référence pour découvrir les meilleures entreprises 

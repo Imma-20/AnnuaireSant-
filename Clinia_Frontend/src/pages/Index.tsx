@@ -3,11 +3,11 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import FeaturedCategories from "@/components/FeaturedCategories";
-import PopularBusinesses from "@/components/PopularBusinesses";
+import AlaUne from "@/components/ALaUne";
 import BeninMap from "@/components/BeninMap";
-import RecentPublications from "@/components/RecentPublications";
+import PublicationsRecentes from "@/components/PublicationsRecentes";
 import FAQ from "@/components/FAQ";
-import SearchResults from "@/components/SearchResults";
+import ResultatsRecherche from "@/components/ResultatsRecherches";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -26,13 +26,13 @@ const Index = () => {
       <Header />
       <Hero onSearch={handleSearch} />
       {showResults ? (
-        <SearchResults query={searchQuery} category={selectedCategory} />
+        <ResultatsRecherche query={searchQuery} category={selectedCategory} />
       ) : (
         <>
           <FeaturedCategories onCategorySelect={(category) => handleSearch("", category)} />
-          <PopularBusinesses />
+          <AlaUne />
           <BeninMap />
-          <RecentPublications />
+          <PublicationsRecentes />
           <FAQ />
         </>
       )}

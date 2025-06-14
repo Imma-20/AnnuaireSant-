@@ -25,6 +25,11 @@ const Hero = ({ onSearch }: HeroProps) => {
     }
   };
 
+  const handleAddBusiness = () => {
+    navigate('/ajouter-centre');
+  };
+
+
   return (
     <section className="relative min-h-[500px] bg-gradient-to-br from-green-700 via-green-600 to-green-800 overflow-hidden">
       {/* Background decorative elements */}
@@ -38,20 +43,20 @@ const Hero = ({ onSearch }: HeroProps) => {
           Annuaire de centres de santé au Bénin
         </h1>
         <p className="text-2xl text-green-100 mb-12 max-w-3xl mx-auto leading-relaxed">
-         Trouvez rapidement des établissements de santé près de chez vous. 
+          Trouvez rapidement  des établissements de santé près de chez vous.
         </p>
 
         {/* Search Form */}
         <div className="mb-8">
           <div className="max-w-2xl mx-auto relative">
             <Input
-              placeholder="un lieu ..."
+              placeholder="un centre ..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={handleKeyPress}
               className="h-14 pl-6 pr-32 text-lg rounded-full border-0 shadow-lg"
             />
-            <Button 
+            <Button
               onClick={handleSearch}
               className="absolute right-2 top-2 h-10 px-8 bg-green-600 hover:bg-green-700 text-white rounded-full"
             >
@@ -63,8 +68,9 @@ const Hero = ({ onSearch }: HeroProps) => {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap justify-center gap-4">
-          <Button 
-            variant="outline" 
+          <Button
+            onClick={handleAddBusiness}
+            variant="outline"
             className="bg-white/10 border-white/30 text-white hover:bg-white/20 rounded-full px-6"
           >
             <Plus className="mr-2 h-4 w-4" />

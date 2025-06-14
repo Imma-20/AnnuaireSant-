@@ -3,7 +3,7 @@ import { Calendar, User, Eye } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-const RecentPublications = () => {
+const PublicationsRecentes = () => {
   const publications = [
     {
       id: 1,
@@ -45,7 +45,7 @@ const RecentPublications = () => {
             Publications récentes
           </h2>
           <p className="text-muted-foreground text-lg">
-            Restez informé des dernières actualités du monde des affaires au Congo
+            Restez informés des dernières actualités du monde de la santé au Bénin !
           </p>
         </div>
 
@@ -99,4 +99,4 @@ const RecentPublications = () => {
   );
 };
 
-export default RecentPublications;
+export default PublicationsRecentes;

@@ -3,16 +3,19 @@ import { Star, MapPin, Phone, Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "react-day-picker";
+import { useNavigate } from "react-router-dom";
 
-const PopularBusinesses = () => {
-  const businesses = [
+const AlaUne = () => {
+  const navigate = useNavigate();
+
+  const centre = [
     {
       id: 1,
-      name: "Restaurant Chez Ntemba",
-      category: "Restaurant",
+      name: "Pharmacie Tanto",
+      category: "Pharmacie",
       rating: 4.8,
       reviews: 124,
-      location: "Kinshasa, Gombe",
+      location: "Tanto, akpakpa",
       phone: "+243 123 456 789",
       hours: "9h00 - 22h00",
       image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop",
@@ -20,8 +23,8 @@ const PopularBusinesses = () => {
     },
     {
       id: 2,
-      name: "Hôtel Memling",
-      category: "Hôtel",
+      name: "Centre 2",
+      category: "Hôpital",
       rating: 4.6,
       reviews: 89,
       location: "Kinshasa, Gombe",
@@ -33,7 +36,7 @@ const PopularBusinesses = () => {
     {
       id: 3,
       name: "Clinique Ngaliema",
-      category: "Santé",
+      category: "Clinique",
       rating: 4.9,
       reviews: 156,
       location: "Kinshasa, Ngaliema",
@@ -44,8 +47,8 @@ const PopularBusinesses = () => {
     },
     {
       id: 4,
-      name: "Banque Commerciale du Congo",
-      category: "Banque",
+      name: "Centre 5",
+      category: "Pharmacie",
       rating: 4.3,
       reviews: 67,
       location: "Kinshasa, Gombe",
@@ -56,11 +59,11 @@ const PopularBusinesses = () => {
     },
     {
       id: 5,
-      name: "École Internationale de Kinshasa",
-      category: "Éducation",
+      name: "Siloé",
+      category: "Pharmacie",
       rating: 4.7,
       reviews: 203,
-      location: "Kinshasa, Gombe",
+      location: "Degakonn akpakpa",
       phone: "+243 444 555 666",
       hours: "7h00 - 16h00",
       image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&h=300&fit=crop",
@@ -68,8 +71,8 @@ const PopularBusinesses = () => {
     },
     {
       id: 6,
-      name: "Garage Central Motors",
-      category: "Automobile",
+      name: "Centre 7",
+      category: "Laboratoire",
       rating: 4.4,
       reviews: 92,
       location: "Kinshasa, Kalamu",
@@ -80,12 +83,16 @@ const PopularBusinesses = () => {
     }
   ];
 
+  const handleViewMore = (centerId: number) => {
+    navigate(`/centre/${centerId}`);
+  };
+
   return (
     <section className="py-16 px-4 bg-muted/30">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-foreground mb-4">
-            Structure de santé à la une !
+           Les structures de santé actuellement ouvertes !
           </h2>
           {/* <p className="text-muted-foreground text-lg">
             Les structures de santé les mieux notées par notre communauté
@@ -93,15 +100,15 @@ const PopularBusinesses = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {businesses.map((business) => (
-            <Card key={business.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+          {centre.map((centre) => (
+            <Card key={centre.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <div className="relative">
                 <img
-                  src={business.image}
-                  alt={business.name}
+                  src={centre.image}
+                  alt={centre.name}
                   className="w-full h-48 object-cover"
                 />
-                {business.featured && (
+                {centre.featured && (
                   <Badge className="absolute top-4 left-4 bg-green-600 text-white">
                     Recommandé
                   </Badge>
@@ -109,34 +116,35 @@ const PopularBusinesses = () => {
               </div>
               <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-semibold text-lg text-foreground">{business.name}</h3>
-                  <Badge variant="outline">{business.category}</Badge>
+                  <h3 className="font-semibold text-lg text-foreground">{centre.name}</h3>
+                  <Badge variant="outline">{centre.category}</Badge>
                 </div>
 
                 <div className="flex items-center mb-3">
                   <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                  <span className="text-sm font-medium ml-1">{business.rating}</span>
-                  <span className="text-sm text-muted-foreground ml-1">({business.reviews} avis)</span>
+                  <span className="text-sm font-medium ml-1">{centre.rating}</span>
+                  <span className="text-sm text-muted-foreground ml-1">({centre.reviews} avis)</span>
                 </div>
 
                 <div className="space-y-2 text-sm text-muted-foreground">
                   <div className="flex items-center">
                     <MapPin className="h-4 w-4 mr-2" />
-                    {business.location}
+                    {centre.location}
                   </div>
                   <div className="flex items-center">
                     <Phone className="h-4 w-4 mr-2" />
-                    {business.phone}
+                    {centre.phone}
                   </div>
 
 
                   <div className="flex items-center justify-between mt-4">
                     <div className="flex items-center text-xs text-muted-foreground">
                       <Clock className="h-4 w-4 mr-2" />
-                      {business.hours}
+                      {centre.hours}
 
                     </div>
-                    <a className=" rounded-lg hover:border-transparent hover:bg-green-700 text-green-600 p-1 hover:text-white text-sm font-medium">
+                    <a className="cursor-pointer rounded-lg hover:border-transparent hover:bg-green-700 text-green-600 p-1 hover:text-white text-sm font-medium"
+                    onClick={() => handleViewMore(centre.id)}>
                       Voir plus
                     </a>
                   </div>
@@ -150,4 +158,4 @@ const PopularBusinesses = () => {
   );
 };
 
-export default PopularBusinesses;
+export default AlaUne;

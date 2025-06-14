@@ -1,4 +1,3 @@
-
 import {
   Accordion,
   AccordionContent,
@@ -9,28 +8,34 @@ import {
 const FAQ = () => {
   const faqs = [
     {
-      question: "Comment ajouter mon entreprise sur CongoFinder ?",
-      answer: "Pour ajouter votre entreprise, cliquez sur le bouton 'Ajouter une entreprise' en haut de la page. Remplissez le formulaire avec les informations de votre entreprise et soumettez-le pour validation."
+      question: "Comment rechercher un établissement de santé ?",
+      answer:
+        "Recherchez un établissement via la barre de recherche ou les catégories, puis cliquez sur le bouton 'Rechercher'. Choisissez la date, l’heure et remplissez les informations demandées."
     },
     {
-      question: "Est-ce que l'inscription est gratuite ?",
-      answer: "Oui, l'inscription de base est entièrement gratuite. Vous pouvez ajouter votre entreprise et ses informations principales sans frais. Des options premium sont disponibles pour plus de visibilité."
+      question: "Puis-je consulter la disponibilité des médecins ou spécialistes ?",
+      answer:
+        "Oui, chaque fiche d’établissement affiche les spécialités disponibles et les créneaux de disponibilité des médecins, si l'établissement a activé cette option."
     },
     {
-      question: "Comment puis-je modifier les informations de mon entreprise ?",
-      answer: "Connectez-vous à votre compte et accédez à votre tableau de bord. Vous pourrez y modifier toutes les informations de votre entreprise en temps réel."
+      question: "Est-ce que l'application est gratuite à utiliser ?",
+      answer:
+        "Oui, l’utilisation de l’application est entièrement gratuite pour les patients. Certaines fonctionnalités avancées peuvent être réservées aux professionnels de santé abonnés."
     },
     {
-      question: "Quelles sont les villes couvertes par CongoFinder ?",
-      answer: "CongoFinder couvre toutes les principales villes du Congo-Brazzaville, notamment Brazzaville, Pointe-Noire, Dolisie, et toutes les autres communes du pays."
+      question: "Comment savoir si un médicament est disponible dans une pharmacie ?",
+      answer:
+        "Utilisez la section 'Pharmacies' et tapez le nom du médicament. Vous verrez la liste des pharmacies proches qui ont signalé sa disponibilité."
     },
     {
-      question: "Comment contacter une entreprise listée ?",
-      answer: "Chaque fiche d'entreprise contient les informations de contact disponibles : téléphone, email, adresse, et parfois les réseaux sociaux."
+      question: "Puis-je enregistrer mes établissements préférés ?",
+      answer:
+        "Oui, vous pouvez ajouter des établissements en favoris pour y accéder plus rapidement depuis votre tableau de bord."
     },
     {
-      question: "Puis-je laisser un avis sur une entreprise ?",
-      answer: "Oui, vous pouvez laisser des avis et noter les entreprises après avoir créé un compte. Cela aide les autres utilisateurs à faire de meilleurs choix."
+      question: "Comment signaler une erreur dans les informations d’un centre ?",
+      answer:
+        "Chaque fiche dispose d’un bouton 'Signaler une erreur'. Cliquez dessus, décrivez le problème, et notre équipe se chargera de la vérification."
     }
   ];
 
