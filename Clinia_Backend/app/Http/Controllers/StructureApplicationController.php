@@ -11,15 +11,67 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage; // Pour la gestion des fichiers (logos)
+use Illuminate\Support\Facades\Auth; // Nécessaire pour Auth::check() et Auth::user()
 
+/**
+ * @group Gestion des Demandes de Structures de Santé
+ *
+ * Ces APIs gèrent le processus de soumission, d'approbation et de rejet des demandes d'inscription
+ * de nouvelles structures de santé sur la plateforme.
+ * Elles sont accessibles aux utilisateurs (soumission) et aux administrateurs (gestion des demandes).
+ */
 class StructureApplicationController extends Controller
 {
     /**
-     * Soumet une nouvelle demande d'inscription de structure de santé.
-     * Accessible aux utilisateurs authentifiés (rôle 'user').
+     * Soumettre une nouvelle demande d'inscription de structure de santé.
      *
-     * @param  \Illuminate->Http->Request  $request
-     * @return \Illuminate->Http->JsonResponse
+     * Cet endpoint permet à un utilisateur authentifié (rôle 'user') de soumettre une demande
+     * pour l'inscription d'une nouvelle structure de santé. Le statut initial de la demande est 'en_attente'.
+     *
+     * @authenticated
+     * @bodyParam nom_structure string required Le nom de la structure de santé. Example: Clinique Espoir
+     * @bodyParam type_structure string required Le type de structure. Doit être l'une des valeurs: `pharmacie`, `hopital`, `laboratoire`, `clinique`, `centre_medical`, `autre`. Example: clinique
+     * @bodyParam adresse string L'adresse physique de la structure. Peut être nul. Example: 123 Rue de la Joie
+     * @bodyParam quartier string Le quartier où se situe la structure. Peut être nul. Example: Agla
+     * @bodyParam ville string La ville où se situe la structure. Peut être nul. Example: Cotonou
+     * @bodyParam commune string La commune où se situe la structure. Peut être nul. Example: Littoral
+     * @bodyParam departement string Le département où se situe la structure. Peut être nul. Example: Atlantique
+     * @bodyParam latitude number La latitude géographique de la structure. Entre -90 et 90. Peut être nul. Example: 6.3700
+     * @bodyParam longitude number La longitude géographique de la structure. Entre -180 et 180. Peut être nul. Example: 2.4200
+     * @bodyParam telephone_principal string Le numéro de téléphone principal de la structure (max: 20 caractères). Peut être nul. Example: +22997000000
+     * @bodyParam telephone_secondaire string Le numéro de téléphone secondaire de la structure (max: 20 caractères). Peut être nul. Example: +22998765432
+     * @bodyParam email_contact string required L'adresse email de contact de la structure. Doit être unique dans les tables `structure_applications`, `structures_sante` et `utilisateurs`. Example: contact@cliniqueespoir.com
+     * @bodyParam site_web string L'URL du site web de la structure. Doit être un format URL valide. Peut être nul. Example: http://www.cliniqueespoir.com
+     * @bodyParam horaires_ouverture string Une chaîne JSON représentant les horaires d'ouverture (ex: `{"Lundi":"08:00-18:00"}`). Peut être nul. Example: {"Lundi":"08:00-18:00", "Mardi":"08:00-18:00"}
+     * @bodyParam description string Une description de la structure. Peut être nulle. Example: Clinique spécialisée en médecine générale et pédiatrie.
+     * @bodyParam logo file Le fichier logo de la structure. Type de fichier image (jpeg, png, etc.) et taille maximale de 2 Mo. Peut être nul.
+     *
+     * @response 201 {
+     * "status": true,
+     * "message": "Demande d'inscription de structure soumise avec succès. Elle est en attente d'approbation.",
+     * "application": {
+     * "id_application": 1,
+     * "nom_structure": "Clinique Espoir",
+     * "type_structure": "clinique",
+     * "email_contact": "contact@cliniqueespoir.com",
+     * "id_utilisateur_soumissionnaire": 1,
+     * "statut_demande": "en_attente",
+     * "created_at": "2023-10-27T10:00:00.000000Z",
+     * "updated_at": "2023-10-27T10:00:00.000000Z"
+     * }
+     * }
+     * @response 400 {
+     * "status": false,
+     * "message": "Erreurs de validation lors de la soumission de la structure.",
+     * "errors": {
+     * "nom_structure": ["Le champ nom structure est requis."],
+     * "email_contact": ["L'adresse email de contact est déjà utilisée."]
+     * }
+     * }
+     * @response 401 {
+     * "status": false,
+     * "message": "Vous devez être connecté pour soumettre une structure."
+     * }
      */
     public function store(Request $request)
     {
@@ -77,9 +129,41 @@ class StructureApplicationController extends Controller
 
     /**
      * Affiche toutes les demandes d'inscription de structure en attente.
-     * Accessible uniquement aux administrateurs.
      *
-     * @return \Illuminate->Http->JsonResponse
+     * Cet endpoint est réservé aux administrateurs et permet de visualiser toutes les demandes
+     * d'inscription de structures de santé dont le statut est 'en_attente'.
+     * Les demandes sont retournées avec les informations de l'utilisateur qui les a soumises.
+     *
+     * @authenticated
+     * @response {
+     * "status": true,
+     * "applications": [
+     * {
+     * "id_application": 1,
+     * "nom_structure": "Clinique Test",
+     * "email_contact": "test@clinique.com",
+     * "statut_demande": "en_attente",
+     * "soumissionnaire": {
+     * "id_utilisateur": 1,
+     * "nom": "Doe",
+     * "prenom": "Jane",
+     * "email": "jane.doe@example.com"
+     * }
+     * }
+     * ]
+     * }
+     * @response 200 {
+     * "status": true,
+     * "applications": []
+     * }
+     * @response 401 {
+     * "status": false,
+     * "message": "Non authentifié."
+     * }
+     * @response 403 {
+     * "status": false,
+     * "message": "Accès refusé. Vous n'êtes pas administrateur."
+     * }
      */
     public function pendingApplications()
     {
@@ -94,18 +178,51 @@ class StructureApplicationController extends Controller
 
     /**
      * Approuve une demande d'inscription de structure.
-     * Crée une StructureSante et un utilisateur avec le rôle 'health_structure'.
-     * Accessible uniquement aux administrateurs.
      *
-     * @param  int  $id_application
-     * @return \Illuminate->Http->JsonResponse
+     * Cet endpoint est réservé aux administrateurs. Il permet d'approuver une demande
+     * d'inscription de structure en attente. Lors de l'approbation, une nouvelle `StructureSante` est créée,
+     * un nouvel `Utilisateur` avec le rôle 'health_structure' est créé et lié à la structure,
+     * et le statut de la demande passe à 'approuve'. Un mot de passe temporaire est généré pour le gestionnaire.
+     *
+     * @authenticated
+     * @urlParam id_application int required L'ID unique de la demande d'inscription à approuver. Example: 1
+     *
+     * @response 200 {
+     * "status": true,
+     * "message": "Demande d'inscription approuvée avec succès. La structure et son compte ont été créés.",
+     * "structure_sante": {
+     * "id_structure": 1,
+     * "nom_structure": "Clinique Approuvée",
+     * "email_contact": "contact@cliniqueapprouvee.com",
+     * "statut_verification": "verifie",
+     * "id_utilisateur": 2
+     * },
+     * "gestionnaire_email": "contact@cliniqueapprouvee.com",
+     * "mot_de_passe_temporaire": "randomPass123"
+     * }
+     * @response 404 {
+     * "status": false,
+     * "message": "Demande d'inscription non trouvée ou déjà traitée."
+     * }
+     * @response 401 {
+     * "status": false,
+     * "message": "Non authentifié."
+     * }
+     * @response 403 {
+     * "status": false,
+     * "message": "Accès refusé. Vous n'êtes pas administrateur."
+     * }
+     * @response 500 {
+     * "status": false,
+     * "message": "Erreur lors de l'approbation de la demande : message d'erreur technique."
+     * }
      */
     public function approve($id_application)
     {
         // La vérification du rôle 'admin' sera faite par un middleware sur la route
         $application = StructureApplication::where('id_application', $id_application)
-                                            ->where('statut_demande', 'en_attente')
-                                            ->first();
+                                           ->where('statut_demande', 'en_attente')
+                                           ->first();
 
         if (!$application) {
             return response()->json([
@@ -152,7 +269,7 @@ class StructureApplicationController extends Controller
 
             // Optional: Move logo from 'logos/applications' to 'logos/structures'
             if ($application->logo && Storage::disk('public')->exists($application->logo)) {
-                $newLogoPath = 'logos/' . basename($application->logo);
+                $newLogoPath = 'logos/structures/' . basename($application->logo); // Change 'logos/' to 'logos/structures/' for clarity
                 Storage::disk('public')->move($application->logo, $newLogoPath);
                 $structureSante->logo = $newLogoPath;
                 $structureSante->save();
@@ -189,12 +306,48 @@ class StructureApplicationController extends Controller
     }
 
     /**
-     * Rejette une demande d'inscription de structure.
-     * Accessible uniquement aux administrateurs.
+     * Rejeter une demande d'inscription de structure.
      *
-     * @param  \Illuminate->Http->Request  $request
-     * @param  int  $id_application
-     * @return \Illuminate->Http->JsonResponse
+     * Cet endpoint est réservé aux administrateurs. Il permet de rejeter une demande
+     * d'inscription de structure en attente. Un motif de rejet doit être fourni.
+     * Le statut de la demande passe à 'rejete'.
+     *
+     * @authenticated
+     * @urlParam id_application int required L'ID unique de la demande d'inscription à rejeter. Example: 1
+     * @bodyParam motif_rejet string required La raison du rejet (max: 1000 caractères). Example: Informations incomplètes sur la licence d'exploitation.
+     *
+     * @response 200 {
+     * "status": true,
+     * "message": "Demande d'inscription rejetée avec succès.",
+     * "application": {
+     * "id_application": 1,
+     * "nom_structure": "Clinique Rejetée",
+     * "email_contact": "rejette@clinique.com",
+     * "statut_demande": "rejete",
+     * "motif_rejet": "Informations incomplètes sur la licence d'exploitation.",
+     * "created_at": "2023-10-27T10:00:00Z",
+     * "updated_at": "2023-10-27T10:45:00Z"
+     * }
+     * }
+     * @response 400 {
+     * "status": false,
+     * "message": "Un motif de rejet est requis.",
+     * "errors": {
+     * "motif_rejet": ["Le champ motif de rejet est requis."]
+     * }
+     * }
+     * @response 404 {
+     * "status": false,
+     * "message": "Demande d'inscription non trouvée ou déjà traitée."
+     * }
+     * @response 401 {
+     * "status": false,
+     * "message": "Non authentifié."
+     * }
+     * @response 403 {
+     * "status": false,
+     * "message": "Accès refusé. Vous n'êtes pas administrateur."
+     * }
      */
     public function reject(Request $request, $id_application)
     {
@@ -212,8 +365,8 @@ class StructureApplicationController extends Controller
         }
 
         $application = StructureApplication::where('id_application', $id_application)
-                                            ->where('statut_demande', 'en_attente')
-                                            ->first();
+                                           ->where('statut_demande', 'en_attente')
+                                           ->first();
 
         if (!$application) {
             return response()->json([

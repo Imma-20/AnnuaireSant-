@@ -5,20 +5,58 @@ namespace App\Http\Controllers;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Mail\SendEmail; // Assurez-vous que cette classe existe et est configurée
 
 
+/**
+ * @group Authentification et Gestion des Utilisateurs
+ *
+ * Ces APIs gèrent l'inscription, la connexion, la déconnexion et la réinitialisation de mot de passe des utilisateurs.
+ */
 class AuthController extends Controller
 {
     /**
-     * Enregistre un nouvel utilisateur.
+     * Enregistrer un nouvel utilisateur.
      *
-     * @param  \Illuminate->Http->Request  $request
-     * @return \Illuminate->Http->JsonResponse
+     * Cet endpoint permet à un nouvel utilisateur de s'inscrire sur la plateforme.
+     * Un token d'authentification est généré et retourné après l'inscription réussie.
+     *
+     * @bodyParam nom string required Le nom de l'utilisateur. Example: Dupont
+     * @bodyParam prenom string required Le prénom de l'utilisateur. Example: Jean
+     * @bodyParam email string required L'adresse email unique de l'utilisateur. Doit être un format d'email valide. Example: jean.dupont@example.com
+     * @bodyParam password string required Le mot de passe de l'utilisateur (minimum 8 caractères). Example: password123
+     * @bodyParam password_confirmation string required La confirmation du mot de passe. Doit correspondre au champ 'password'. Example: password123
+     * @bodyParam telephone string Le numéro de téléphone de l'utilisateur. Peut être nul. Example: 0601020304
+     *
+     * @response 201 {
+     * "status": true,
+     * "message": "Utilisateur enregistré avec succès.",
+     * "utilisateur": {
+     * "nom": "Dupont",
+     * "prenom": "Jean",
+     * "email": "jean.dupont@example.com",
+     * "telephone": "0601020304",
+     * "updated_at": "2023-10-27T10:00:00.000000Z",
+     * "created_at": "2023-10-27T10:00:00.000000Z",
+     * "id_utilisateur": 1
+     * },
+     * "token": "votre-token-jwt-ici"
+     * }
+     * @response 400 {
+     * "status": false,
+     * "message": "Le champ email est requis."
+     * }
+     * @response 422 {
+     * "message": "The given data was invalid.",
+     * "errors": {
+     * "email": ["The email has already been taken."],
+     * "password": ["The password confirmation does not match."]
+     * }
+     * }
      */
     public function register(Request $request)
     {
@@ -57,7 +95,6 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'telephone' => $request->telephone,
-            // Le rôle par défaut est défini dans la migration sur la colonne 'role' (ex: 'user')
         ]);
 
         // Génération d'un token pour l'utilisateur
@@ -72,10 +109,46 @@ class AuthController extends Controller
     }
 
     /**
-     * Gère la connexion des utilisateurs et indique la redirection en fonction du rôle.
+     * Connecter un utilisateur.
      *
-     * @param  \Illuminate->Http->Request  $request
-     * @return \Illuminate->Http->JsonResponse
+     * Cet endpoint permet à un utilisateur existant de se connecter en fournissant son email et son mot de passe.
+     * Un token d'authentification est retourné, ainsi qu'une URL de redirection basée sur le rôle de l'utilisateur.
+     *
+     * @bodyParam email string required L'adresse email de l'utilisateur. Example: admin@example.com
+     * @bodyParam password string required Le mot de passe de l'utilisateur. Example: password123
+     *
+     * @response 200 {
+     * "status": true,
+     * "message": "Connexion réussie.",
+     * "utilisateur": {
+     * "id_utilisateur": 1,
+     * "nom": "Admin",
+     * "prenom": "User",
+     * "email": "admin@example.com",
+     * "role": "admin",
+     * "statut_compte": "actif"
+     * },
+     * "token": "votre-token-jwt-ici",
+     * "redirect_to": "/admin/dashboard"
+     * }
+     * @response 400 {
+     * "status": false,
+     * "message": "Le champ email est requis."
+     * }
+     * @response 401 {
+     * "status": false,
+     * "message": "Identifiants incorrects."
+     * }
+     * @response 403 {
+     * "status": false,
+     * "message": "Votre compte est inactif. Veuillez contacter l'administrateur."
+     * }
+     * @response 422 {
+     * "message": "The given data was invalid.",
+     * "errors": {
+     * "email": ["The email field is required."]
+     * }
+     * }
      */
     public function login(Request $request)
     {
@@ -155,21 +228,26 @@ class AuthController extends Controller
     }
 
     /**
-     * Déconnecte l'utilisateur en invalidant ses tokens.
-     * Cette route devrait être protégée par le middleware 'auth:sanctum'.
+     * Déconnecter l'utilisateur.
      *
-     * @param  \Illuminate->Http->Request  $request
-     * @return \Illuminate->Http->JsonResponse
+     * Cet endpoint permet à l'utilisateur authentifié de se déconnecter en invalidant ses tokens API actuels.
+     * L'utilisateur doit être authentifié via un token valide pour que cette opération réussisse.
+     *
+     * @authenticated
+     * @response 200 {
+     * "status": true,
+     * "message": "Déconnexion réussie."
+     * }
+     * @response 401 {
+     * "status": false,
+     * "message": "Non authentifié."
+     * }
      */
     public function logout(Request $request)
     {
-        // Invalidation de tous les tokens de l'utilisateur actuel
-        // 'Auth::user()' (ou 'auth()->user()') retourne l'instance de l'utilisateur authentifié
-        // ou 'null' si aucun utilisateur n'est authentifié.
         $user = Auth::user();
 
         if ($user) {
-            // Si l'utilisateur est trouvé, ses tokens sont supprimés.
             $user->tokens()->delete();
             return response()->json([
                 'status' => true,
@@ -177,7 +255,6 @@ class AuthController extends Controller
             ], 200);
         }
 
-        // Si aucun utilisateur n'est authentifié (par exemple, pas de token ou token invalide)
         return response()->json([
             'status' => false,
             'message' => 'Aucun utilisateur authentifié.',
@@ -185,10 +262,19 @@ class AuthController extends Controller
     }
 
     /**
-     * Gère la demande de réinitialisation de mot de passe.
+     * Demander la réinitialisation du mot de passe.
      *
-     * @param  \Illuminate->Http->Request  $request
-     * @return \Illuminate->Http->JsonResponse
+     * Cet endpoint envoie un email à l'utilisateur avec un lien de réinitialisation de mot de passe.
+     * L'email fourni doit correspondre à un compte existant.
+     *
+     * @bodyParam email string required L'adresse email de l'utilisateur dont le mot de passe doit être réinitialisé. Example: user@example.com
+     *
+     * @response 200 {
+     * "message": "Un lien de réinitialisation de mot de passe a été envoyé à votre adresse email."
+     * }
+     * @response 422 {
+     * "message": "Adresse email invalide ou non enregistrée."
+     * }
      */
     public function forgotPassword(Request $request)
     {
@@ -202,47 +288,15 @@ class AuthController extends Controller
 
         $token = Str::random(60);
 
-        // Stockage du token dans une table dédiée (assurez-vous que 'password_resets' existe ou créez-la)
         DB::table('password_resets')->updateOrInsert(
             ['email' => $request->email],
             ['token' => $token, 'created_at' => now()]
         );
 
-        // Générer le lien de réinitialisation (ajustez l'URL de base selon votre frontend)
         $link = url(env('FRONTEND_URL', 'http://localhost:3000') . '/reset-password?token=' . $token . '&email=' . $request->email);
 
-        // Envoyer l'email avec le lien
-        // Assurez-vous que la configuration de l'envoi d'emails est correcte dans .env et config/mail.php
         Mail::to($request->email)->send(new SendEmail($link));
 
         return response()->json(['message' => 'Un lien de réinitialisation de mot de passe a été envoyé à votre adresse email.'], 200);
     }
-
-    // Si vous avez besoin d'une méthode pour réinitialiser le mot de passe après avoir cliqué sur le lien
-    // Ce n'est pas demandé explicitement, mais c'est la suite logique de forgotPassword.
-    // public function resetPassword(Request $request)
-    // {
-    //     $request->validate([
-    //         'token' => 'required|string',
-    //         'email' => 'required|email|exists:utilisateurs,email',
-    //         'password' => 'required|string|min:8|confirmed',
-    //     ]);
-
-    //     $passwordReset = DB::table('password_resets')
-    //                         ->where('email', $request->email)
-    //                         ->where('token', $request->token)
-    //                         ->first();
-
-    //     if (!$passwordReset || now()->diffInMinutes($passwordReset->created_at) > 60) { // Token valide pour 60 minutes
-    //         return response()->json(['message' => 'Token invalide ou expiré.'], 400);
-    //     }
-
-    //     $user = Utilisateur::where('email', $request->email)->first();
-    //     $user->password = Hash::make($request->password);
-    //     $user->save();
-
-    //     DB::table('password_resets')->where('email', $request->email)->delete();
-
-    //     return response()->json(['message' => 'Votre mot de passe a été réinitialisé avec succès.'], 200);
-    // }
 }

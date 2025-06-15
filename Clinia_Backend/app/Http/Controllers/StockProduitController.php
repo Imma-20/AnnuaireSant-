@@ -9,14 +9,61 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth; // Assurez-vous que cette ligne est présente et correcte
 
+/**
+ * @group Gestion du Stock de Produits des Structures de Santé
+ *
+ * Ces APIs permettent de gérer l'inventaire des produits au sein des structures de santé.
+ * Elles sont accessibles aux administrateurs (pour toutes les structures) et aux gestionnaires de structures (pour leur propre structure).
+ */
 class StockProduitController extends Controller
 {
     /**
      * Affiche les produits en stock pour une structure spécifique.
-     * Accessible à tous.
      *
-     * @param  int  $id_structure
-     * @return \Illuminate->Http->JsonResponse
+     * Cet endpoint est accessible à tous les utilisateurs et retourne la liste des produits
+     * en stock pour une structure de santé donnée, à condition qu'elle soit vérifiée.
+     * Les informations pivot comme la `quantite_disponible` et le `statut_stock` sont incluses.
+     *
+     * @urlParam id_structure int required L'ID unique de la structure de santé. Example: 1
+     * @response {
+     * "status": true,
+     * "produits_en_stock": [
+     * {
+     * "id_produit": 1,
+     * "nom_produit": "Paracétamol 500mg",
+     * "description": "Médicament pour la douleur.",
+     * "categorie": "Médicament",
+     * "code_produit": "PARA500",
+     * "pivot": {
+     * "id_structure": 1,
+     * "id_produit": 1,
+     * "quantite_disponible": 150,
+     * "statut_stock": "disponible"
+     * }
+     * },
+     * {
+     * "id_produit": 2,
+     * "nom_produit": "Gants stériles",
+     * "description": "Gants médicaux.",
+     * "categorie": "Matériel Médical",
+     * "code_produit": "GANT001",
+     * "pivot": {
+     * "id_structure": 1,
+     * "id_produit": 2,
+     * "quantite_disponible": 20,
+     * "statut_stock": "stock_critique"
+     * }
+     * }
+     * ]
+     * }
+     * @response 200 {
+     * "status": true,
+     * "produits_en_stock": []
+     * }
+     * @response 404 {
+     * "status": false,
+     * "message": "Structure de santé non trouvée ou non vérifiée."
+     * }
      */
     public function indexByStructure($id_structure)
     {
@@ -42,11 +89,49 @@ class StockProduitController extends Controller
 
     /**
      * Ajoute ou met à jour un produit en stock pour une structure de santé.
-     * Accessible aux administrateurs ou au gestionnaire de la structure concernée.
      *
-     * @param  \Illuminate->Http->Request  $request
-     * @param  int  $id_structure
-     * @return \Illuminate->Http->JsonResponse
+     * Cet endpoint permet d'ajouter un nouveau produit à l'inventaire d'une structure ou de mettre à jour
+     * la quantité et le statut d'un produit déjà en stock.
+     * Accessible aux administrateurs (pour toute structure) ou au gestionnaire de la structure concernée.
+     *
+     * @authenticated
+     * @urlParam id_structure int required L'ID unique de la structure de santé dont le stock est géré. Example: 1
+     * @bodyParam id_produit int required L'ID unique du produit à ajouter ou mettre à jour dans le stock. Doit exister dans la table `produits`. Example: 1
+     * @bodyParam quantite_disponible int required La quantité disponible du produit. Doit être un entier non négatif. Example: 100
+     * @bodyParam statut_stock string Le statut actuel du stock. Peut être `disponible`, `stock_critique`, ou `indisponible`. Par défaut: `disponible`. Example: disponible
+     *
+     * @response 200 {
+     * "status": true,
+     * "message": "Stock du produit mis à jour avec succès.",
+     * "stock_item": {
+     * "id_structure": 1,
+     * "id_produit": 1,
+     * "quantite_disponible": 100,
+     * "statut_stock": "disponible",
+     * "created_at": "2023-10-27T10:00:00Z",
+     * "updated_at": "2023-10-27T10:30:00Z"
+     * }
+     * }
+     * @response 400 {
+     * "status": false,
+     * "message": "Erreurs de validation.",
+     * "errors": {
+     * "id_produit": ["Le champ id produit est requis."],
+     * "quantite_disponible": ["Le champ quantite disponible doit être un entier."]
+     * }
+     * }
+     * @response 401 {
+     * "status": false,
+     * "message": "Non authentifié. Vous devez être connecté pour gérer le stock."
+     * }
+     * @response 403 {
+     * "status": false,
+     * "message": "Accès refusé. Vous n'êtes pas autorisé à gérer le stock de cette structure."
+     * }
+     * @response 404 {
+     * "status": false,
+     * "message": "Structure de santé non trouvée."
+     * }
      */
     public function storeOrUpdate(Request $request, $id_structure)
     {
@@ -108,11 +193,31 @@ class StockProduitController extends Controller
 
     /**
      * Supprime un produit du stock d'une structure de santé.
-     * Accessible aux administrateurs ou au gestionnaire de la structure concernée.
      *
-     * @param  int  $id_structure
-     * @param  int  $id_produit
-     * @return \Illuminate->Http->JsonResponse
+     * Cet endpoint permet de retirer un produit de l'inventaire d'une structure de santé.
+     * Le produit n'est pas supprimé de la table `produits`, seule son association avec la structure est retirée.
+     * Accessible aux administrateurs (pour toute structure) ou au gestionnaire de la structure concernée.
+     *
+     * @authenticated
+     * @urlParam id_structure int required L'ID unique de la structure de santé. Example: 1
+     * @urlParam id_produit int required L'ID unique du produit à supprimer du stock. Example: 1
+     *
+     * @response 200 {
+     * "status": true,
+     * "message": "Produit retiré du stock de la structure avec succès."
+     * }
+     * @response 401 {
+     * "status": false,
+     * "message": "Non authentifié. Vous devez être connecté pour supprimer des produits du stock."
+     * }
+     * @response 403 {
+     * "status": false,
+     * "message": "Accès refusé. Vous n'êtes pas autorisé à supprimer des produits de cette structure."
+     * }
+     * @response 404 {
+     * "status": false,
+     * "message": "Structure de santé non trouvée."
+     * }
      */
     public function destroy($id_structure, $id_produit)
     {
