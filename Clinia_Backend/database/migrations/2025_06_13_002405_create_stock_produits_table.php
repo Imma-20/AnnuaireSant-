@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('stock_produits', function (Blueprint $table) {
             $table->id('id_stock');
-            $table->foreignId('id_structure')->constrained('structures_sante', 'id_structure')->onDelete('cascade');
+            $table->foreignId('id_structure')->constrained('structures_santes', 'id_structure')->onDelete('cascade');
             $table->foreignId('id_produit')->constrained('produits', 'id_produit')->onDelete('cascade');
             $table->unsignedInteger('quantite_disponible')->default(0);
             $table->enum('statut_stock', ['disponible', 'stock_critique', 'indisponible'])->default('disponible');

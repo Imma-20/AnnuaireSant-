@@ -39,7 +39,7 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-500 via-yellow-400 to-red-400">
+    <div className="min-h-screen flex items-center justify-center bg-green-600">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-2xl shadow-lg">
         <div className="text-center">
           <img

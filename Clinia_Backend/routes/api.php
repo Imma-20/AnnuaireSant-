@@ -9,7 +9,6 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\RechercheController;
 use App\Http\Controllers\StructureApplicationController;
-// AJOUTS : Importation des contrôleurs pour les tables pivots
 use App\Http\Controllers\StructureServiceController;
 use App\Http\Controllers\StructureAssuranceController;
 use App\Http\Controllers\StockProduitController;

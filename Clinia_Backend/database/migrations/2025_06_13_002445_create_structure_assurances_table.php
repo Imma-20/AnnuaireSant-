@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('structure_assurances', function (Blueprint $table) {
-            $table->foreignId('id_structure')->constrained('structures_sante', 'id_structure')->onDelete('cascade');
-            $table->foreignId('id_assurance')->constrained('compagnies_assurance', 'id_assurance')->onDelete('cascade');
+            $table->foreignId('id_structure')->constrained('structures_santes', 'id_structure')->onDelete('cascade');
+            $table->foreignId('id_assurance')->constrained('compagnies_assurances', 'id_assurance')->onDelete('cascade');
             $table->text('modalites_specifiques')->nullable();
             $table->timestamps();
 

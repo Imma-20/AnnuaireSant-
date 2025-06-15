@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('evaluations', function (Blueprint $table) {
             $table->id('id_evaluation');
-            $table->foreignId('id_structure')->constrained('structures_sante', 'id_structure')->onDelete('cascade');
+            $table->foreignId('id_structure')->constrained('structures_santes', 'id_structure')->onDelete('cascade');
             $table->foreignId('id_utilisateur')->constrained('utilisateurs', 'id_utilisateur')->onDelete('cascade');
             $table->unsignedTinyInteger('note')->comment('Note entre 1 et 5'); // Note sur 5 par exemple
             $table->text('commentaire')->nullable();

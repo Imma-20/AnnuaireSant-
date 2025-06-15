@@ -26,7 +26,7 @@ const ForgotPasswordPage: React.FC = () => {
   // --- Rendu conditionnel ici ---
   if (mailSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white"> {/* Fond blanc */}
+      <div className="min-h-screen flex items-center justify-center bg-green-600"> {/* Fond blanc */}
         <div className="w-full max-w-md p-8 space-y-6 bg-white text-center">
           <h2 className="text-3xl font-bold text-green-600 mb-4">Succès !</h2>
           <p className="text-lg text-gray-800">

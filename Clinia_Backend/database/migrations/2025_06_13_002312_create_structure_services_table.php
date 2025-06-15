@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('structure_services', function (Blueprint $table) {
-            $table->foreignId('id_structure')->constrained('structures_sante', 'id_structure')->onDelete('cascade');
+            $table->foreignId('id_structure')->constrained('structures_santes', 'id_structure')->onDelete('cascade');
             $table->foreignId('id_service')->constrained('services', 'id_service')->onDelete('cascade');
             $table->enum('disponibilite', ['disponible', 'indisponible', 'sur_rendez_vous'])->default('disponible');
             $table->text('informations_supplementaires')->nullable();

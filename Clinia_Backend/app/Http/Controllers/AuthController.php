@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-use App\Mail\SendEmail; // Assurez-vous que cette classe existe et est configurée
+use App\Mail\SendEmail; 
 
 
 /**
