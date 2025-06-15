@@ -31,7 +31,7 @@ const Footer = () => {
               <li><a href="#" className="hover:text-green-600 transition-colors">Rechercher</a></li>
               <li><a href="#" className="hover:text-green-600 transition-colors">Catégories</a></li>
               <li><a href="#" className="hover:text-green-600 transition-colors">Ajouter une entreprise</a></li>
-              <li><a href="#" className="hover:text-green-600 transition-colors">Blog</a></li>
+              <li><a href="#" className="hover:text-green-600 transition-colors">Publication</a></li>
             </ul>
           </div>
 

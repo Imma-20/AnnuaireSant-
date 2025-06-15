@@ -1,6 +1,5 @@
-
-import { useState } from "react";
-import { Search, Plus, Calendar, Star } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +10,30 @@ interface HeroProps {
 
 const Hero = ({ onSearch }: HeroProps) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentTypeIndex, setCurrentTypeIndex] = useState(0);
   const navigate = useNavigate();
+
+  // Liste des types d'établissements de santé
+  const healthCenterTypes = [
+    "hôpital",
+    "centre de rééducation",
+    "clinique",
+    "laboratoire",
+    "cabinet d'imagerie",
+    "cabinet dentaire",
+    "ambulance et urgence",
+    "pharmacie"
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTypeIndex((prevIndex) =>
+        prevIndex === healthCenterTypes.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 1000); // Change le type toutes les 1 secondes
+
+    return () => clearInterval(interval);
+  }, [healthCenterTypes.length]);
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -29,7 +51,6 @@ const Hero = ({ onSearch }: HeroProps) => {
     navigate('/ajouter-centre');
   };
 
-
   return (
     <section className="relative min-h-[500px] bg-gradient-to-br from-green-700 via-green-600 to-green-800 overflow-hidden">
       {/* Background decorative elements */}
@@ -40,21 +61,21 @@ const Hero = ({ onSearch }: HeroProps) => {
 
       <div className="relative max-w-4xl mx-auto px-4 py-16 text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-          Annuaire de centres de santé au Bénin
+          Annuaire des services de santé au Bénin
         </h1>
         <p className="text-2xl text-green-100 mb-12 max-w-3xl mx-auto leading-relaxed">
-          Trouvez rapidement  des établissements de santé près de chez vous.
+          Trouvez rapidement des établissements de santé près de chez vous.
         </p>
 
         {/* Search Form */}
         <div className="mb-8">
           <div className="max-w-2xl mx-auto relative">
             <Input
-              placeholder="un centre ..."
+              placeholder={`${healthCenterTypes[currentTypeIndex]}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="h-14 pl-6 pr-32 text-lg rounded-full border-0 shadow-lg"
+              className="h-14 pl-6 pr-32 text-lg rounded-full border-0 shadow-lg text-gray-400"
             />
             <Button
               onClick={handleSearch}
@@ -76,20 +97,6 @@ const Hero = ({ onSearch }: HeroProps) => {
             <Plus className="mr-2 h-4 w-4" />
             Ajouter une structure de santé
           </Button>
-          {/* <Button 
-            variant="outline" 
-            className="bg-transparent border-yellow-400 text-yellow-400 hover:bg-yellow-400/20 rounded-full px-6"
-          >
-            <Calendar className="mr-2 h-4 w-4" />
-            Passez une annonce
-          </Button>
-          <Button 
-            variant="outline" 
-            className="bg-transparent border-yellow-400 text-yellow-400 hover:bg-yellow-400/20 rounded-full px-6"
-          >
-            <Star className="mr-2 h-4 w-4" />
-            Obtenez un devis
-          </Button> */}
         </div>
       </div>
     </section>

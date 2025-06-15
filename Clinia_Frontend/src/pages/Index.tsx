@@ -3,7 +3,7 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import FeaturedCategories from "@/components/FeaturedCategories";
-import AlaUne from "@/components/ALaUne";
+import AlaUne from "@/components/OpenStructure";
 import BeninMap from "@/components/BeninMap";
 import PublicationsRecentes from "@/components/PublicationsRecentes";
 import FAQ from "@/components/FAQ";

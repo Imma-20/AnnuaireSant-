@@ -1,20 +1,31 @@
-
+import React from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Correction pour les icônes par défaut de Leaflet
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+});
 
 const BeninMap = () => {
   const departments = [
-    { name: "Bouenza", count: null, color: "bg-green-500" },
-    { name: "Brazzaville", count: 208, color: "bg-green-600" },
-    { name: "Cuvette", count: null, color: "bg-green-500" },
-    { name: "Cuvette-Ouest", count: null, color: "bg-green-500" },
-    { name: "Kouilou", count: null, color: "bg-green-500" },
-    { name: "Lékoumou", count: null, color: "bg-green-500" },
-    { name: "Likouala", count: null, color: "bg-green-500" },
-    { name: "Niari", count: 5, color: "bg-green-600" },
-    { name: "Plateaux", count: null, color: "bg-green-500" },
-    { name: "Pointe-Noire", count: 105, color: "bg-green-600" },
-    { name: "Pool", count: null, color: "bg-green-500" },
-    { name: "Sangha", count: null, color: "bg-green-500" },
+    { name: "Alibori", position: [10.92, 2.74], color: "bg-green-500" },
+    { name: "Atacora", position: [10.43, 1.48], color: "bg-green-500" },
+    { name: "Atlantique", position: [6.61, 2.25], color: "bg-green-500" },
+    { name: "Borgou", position: [9.35, 2.75], color: "bg-green-500" },
+    { name: "Collines", position: [8.25, 2.12], color: "bg-green-500" },
+    { name: "Donga", position: [9.75, 1.67], color: "bg-green-500" },
+    { name: "Couffo", position: [7.12, 1.75], color: "bg-green-500" },
+    { name: "Littoral", position: [6.38, 2.42], color: "bg-green-600", count: 208 },
+    { name: "Mono", position: [6.42, 1.83], color: "bg-green-500" },
+    { name: "Ouémé", position: [6.85, 2.48], color: "bg-green-500" },
+    { name: "Plateau", position: [7.42, 2.62], color: "bg-green-500" },
+    { name: "Zou", position: [7.35, 2.07], color: "bg-green-500" },
   ];
 
   return (
@@ -50,30 +61,22 @@ const BeninMap = () => {
               </CardContent>
             </Card>
           </div>
-          
+
           <div className="w-2/3 pl-8">
             <div className="relative">
-              {/* SVG Map of Congo-Brazzaville */}
-              <svg viewBox="0 0 400 500" className="w-full max-w-md mx-auto">
-                {/* Simplified Congo-Brazzaville map shape */}
-                <path
-                  d="M80 50 L180 40 L220 60 L250 80 L280 120 L300 160 L320 200 L310 250 L290 300 L270 350 L250 400 L220 430 L180 450 L140 440 L100 420 L80 380 L60 340 L50 300 L45 250 L50 200 L60 150 L70 100 Z"
-                  fill="#e5e7eb"
-                  stroke="#d1d5db"
-                  strokeWidth="2"
-                  className="hover:fill-green-100 transition-colors cursor-pointer"
+              <MapContainer center={[9.3077, 2.3158]} zoom={7} style={{ height: '600px', width: '100%' }}>
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                
-                {/* Department divisions - simplified */}
-                <circle cx="200" cy="380" r="8" fill="#22c55e" className="cursor-pointer" />
-                <text x="210" y="385" fontSize="10" fill="#374151">Brazzaville</text>
-                
-                <circle cx="120" cy="420" r="6" fill="#22c55e" className="cursor-pointer" />
-                <text x="130" y="425" fontSize="10" fill="#374151">Pointe-Noire</text>
-                
-                <circle cx="180" cy="300" r="4" fill="#22c55e" className="cursor-pointer" />
-                <text x="190" y="305" fontSize="10" fill="#374151">Niari</text>
-              </svg>
+                {departments.map((dept, index) => (
+                  dept.position && (
+                    <Marker key={index} position={dept.position}>
+                      <Popup>{dept.name}</Popup>
+                    </Marker>
+                  )
+                ))}
+              </MapContainer>
             </div>
           </div>
         </div>

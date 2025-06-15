@@ -1,11 +1,10 @@
-
 import { Star, MapPin, Phone, Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "react-day-picker";
 import { useNavigate } from "react-router-dom";
 
-const AlaUne = () => {
+const OpenStructure = () => {
   const navigate = useNavigate();
 
   const centre = [
@@ -92,11 +91,8 @@ const AlaUne = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-foreground mb-4">
-           Les structures de santé actuellement ouvertes !
+            Les structures de santé actuellement ouvertes !
           </h2>
-          {/* <p className="text-muted-foreground text-lg">
-            Les structures de santé les mieux notées par notre communauté
-          </p> */}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -108,11 +104,9 @@ const AlaUne = () => {
                   alt={centre.name}
                   className="w-full h-48 object-cover"
                 />
-                {centre.featured && (
-                  <Badge className="absolute top-4 left-4 bg-green-600 text-white">
-                    Recommandé
-                  </Badge>
-                )}
+                <Badge className="absolute top-4 left-4 bg-green-600 text-white">
+                  Ouvert maintenant
+                </Badge>
               </div>
               <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-2">
@@ -136,15 +130,15 @@ const AlaUne = () => {
                     {centre.phone}
                   </div>
 
-
                   <div className="flex items-center justify-between mt-4">
                     <div className="flex items-center text-xs text-muted-foreground">
                       <Clock className="h-4 w-4 mr-2" />
                       {centre.hours}
-
                     </div>
-                    <a className="cursor-pointer rounded-lg hover:border-transparent hover:bg-green-700 text-green-600 p-1 hover:text-white text-sm font-medium"
-                    onClick={() => handleViewMore(centre.id)}>
+                    <a
+                      className="cursor-pointer rounded-lg hover:border-transparent hover:bg-green-700 text-green-600 p-1 hover:text-white text-sm font-medium"
+                      onClick={() => handleViewMore(centre.id)}
+                    >
                       Voir plus
                     </a>
                   </div>
@@ -158,4 +152,4 @@ const AlaUne = () => {
   );
 };
 
-export default AlaUne;
+export default OpenStructure;
