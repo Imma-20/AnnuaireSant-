@@ -54,16 +54,14 @@ const LoginPage: React.FC = () => {
       ) : (
         <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-2xl shadow-lg">
           {/* Logo de l'application */}
-          <div className="flex justify-center">
-            <img
-              src="assets/logo.png"
-              alt="Logo de l'application"
-              className="w-24 h-24 rounded-full"
-            />
-          </div>
-
-          {/* Titre du formulaire */}
-          <h2 className="text-center text-2xl font-bold text-gray-700">Admin Login</h2>
+          <div className="text-center">
+          <img
+            src="assets/logo.png"
+            alt="Logo de l'application"
+            className="w-24 h-24 mx-auto rounded-full shadow-md" 
+          />
+          <h2 className="mt-4 text-3xl font-extrabold text-gray-800">Se connecter</h2> {/* Texte plus grand et gras */}
+        </div>
 
           {/* Affichage de l'erreur */}
           {error && <p className="text-red-500 text-center">{error}</p>}

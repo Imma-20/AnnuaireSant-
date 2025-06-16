@@ -6,9 +6,13 @@ import {
   FaUser,
   FaLock,
   FaSignOutAlt,
+  FaSun, // Icône pour le mode clair
+  FaMoon, // Icône pour le mode sombre
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import NotificationBell from './NotificationBell'; 
+import NotificationBell from './NotificationBell';
+import { useTheme } from '../contexts/ThemeContext'; // Importe le hook useTheme
+
 // --- Définition des types pour une meilleure structure des données ---
 interface UserInfo {
   name: string;
@@ -20,11 +24,10 @@ interface NavbarProps {
   toggleSidebar: () => void; // Fonction pour basculer la sidebar
 }
 
-// Modifiez la déclaration du composant pour accepter les props
 const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
-  // --- State Management ---
+  // --- Gestion de l'état ---
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
-
+  const { theme, toggleTheme } = useTheme(); // Utilise le contexte de thème
 
   // Références pour détecter les clics en dehors des éléments
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -37,7 +40,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
 
   const navigate = useNavigate();
 
-  // --- Handlers ---
+  // --- Gestionnaires ---
   const handleLogout = useCallback(() => {
     localStorage.removeItem("authToken");
     sessionStorage.removeItem("authToken");
@@ -49,7 +52,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   }, [navigate]);
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
-    // Ne gère plus que le dropdown utilisateur, NotificationBell gère le sien
     if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
       setShowDropdown(false);
     }
@@ -65,71 +67,120 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
 
   // --- Rendu du Composant ---
   return (
-    <div className="flex items-center justify-between bg-gray-100 p-4 shadow-md">
-      {/* Left Icons */}
+    <div className="flex items-center justify-between p-4 shadow-md
+                    bg-green-600 text-white                      {/* Fond green-600 par défaut, texte blanc */}
+                    dark:bg-gray-900 dark:text-gray-100        {/* Styles du mode sombre */}
+                    transition-colors duration-300">           {/* Transition douce */}
+      {/* Icônes de gauche */}
       <div className="flex items-center space-x-4">
-        {/* L'icône FaBars appelle maintenant la fonction toggleSidebar passée en prop */}
         <FaBars
-          className="text-gray-600 cursor-pointer text-xl"
+          className="cursor-pointer text-xl
+                     text-white dark:text-gray-300               {/* Icône blanche en mode clair, grise en sombre */}
+                     hover:text-green-200 dark:hover:text-green-400" 
           title="Ouvrir/Fermer le menu"
           onClick={toggleSidebar}
         />
-        <FaSearch className="text-gray-600 cursor-pointer text-xl" title="Rechercher" />
+        <FaSearch
+          className="cursor-pointer text-xl
+                     text-white dark:text-gray-300
+                     hover:text-green-200 dark:hover:text-green-400"
+          title="Rechercher"
+        />
       </div>
 
-      {/* Center (Empty for now) */}
+      {/* Centre (vide pour l'instant) */}
       <div className="flex-grow"></div>
 
-      {/* Right Icons */}
+      {/* Icônes de droite */}
       <div className="relative flex items-center space-x-6">
-        <NotificationBell />
-        {/* Settings Icon */}
-        <FaCog className="text-gray-600 cursor-pointer text-xl" title="Aller aux paramètres" onClick={() => navigate("/dashboard/settings")} />
+        {/* Bouton de bascule de thème */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-full focus:outline-none
+                     bg-green-700 text-white                  {/* Bouton vert en mode clair */}
+                     dark:bg-gray-700 dark:text-gray-200
+                     hover:bg-green-800 dark:hover:bg-gray-600
+                     transition-colors duration-300"
+          title={`Activer le mode ${theme === 'light' ? 'sombre' : 'clair'}`}
+        >
+          {theme === 'light' ? (
+            <FaMoon className="text-xl" /> // Icône de lune pour le mode clair
+          ) : (
+            <FaSun className="text-xl" />  // Icône de soleil pour le mode sombre
+          )}
+        </button>
 
-        {/* User Icon with Dropdown */}
+        <NotificationBell /> {/* Supposons que NotificationBell gère également le mode sombre */}
+
+        {/* Icône de paramètres */}
+        <FaCog
+          className="cursor-pointer text-xl
+                     text-white dark:text-gray-300
+                     hover:text-green-200 dark:hover:text-green-400"
+          title="Aller aux paramètres"
+          onClick={() => navigate("/dashboard/settings")}
+        />
+
+        {/* Icône utilisateur avec Dropdown */}
         <div ref={dropdownRef} className="relative">
           <FaUser
-            className="text-gray-600 cursor-pointer text-xl"
+            className="cursor-pointer text-xl
+                       text-white dark:text-gray-300
+                       hover:text-green-200 dark:hover:text-green-400"
             title="Profil utilisateur"
             onClick={() => {
               setShowDropdown((prev) => !prev);
-              // Pas besoin de fermer les notifications ici, NotificationBell s'en charge
             }}
           />
           {showDropdown && (
-            <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
-              <div className="bg-blue-600 text-white p-4 rounded-t-lg">
+            <div className="absolute right-0 mt-2 w-64 rounded-lg shadow-lg z-10
+                            bg-white border border-gray-200                     {/* Valeurs par défaut du mode clair */}
+                            dark:bg-gray-700 dark:border-gray-600">             {/* Styles du mode sombre */}
+              <div className="bg-green-600 text-white p-4 rounded-t-lg"> {/* L'en-tête reste vert */}
                 <p className="font-bold text-lg">{user.name}</p>
                 <p className="text-sm opacity-90">{user.email}</p>
               </div>
 
-              <ul className="divide-y divide-gray-200">
+              <ul className="divide-y
+                             divide-gray-200 dark:divide-gray-600">             {/* Couleur du séparateur */}
                 <li
-                  className="flex items-center space-x-3 p-4 hover:bg-gray-100 cursor-pointer text-gray-800"
+                  className="flex items-center space-x-3 p-4 cursor-pointer
+                             text-gray-800 hover:bg-gray-100                     {/* Mode clair */}
+                             dark:text-gray-100 dark:hover:bg-gray-600          {/* Mode sombre */}
+                             transition-colors duration-200"
                   onClick={() => { navigate("/profile"); setShowDropdown(false); }}
                 >
-                  <FaUser className="text-blue-500" />
+                  <FaUser className="text-green-500 dark:text-green-400" /> {/* Couleur de l'icône */}
                   <span>Mon Profil</span>
                 </li>
                 <li
-                  className="flex items-center space-x-3 p-4 hover:bg-gray-100 cursor-pointer text-gray-800"
+                  className="flex items-center space-x-3 p-4 cursor-pointer
+                             text-gray-800 hover:bg-gray-100
+                             dark:text-gray-100 dark:hover:bg-gray-600
+                             transition-colors duration-200"
                   onClick={() => { navigate("/dashboard/settings"); setShowDropdown(false); }}
                 >
-                  <FaCog className="text-gray-500" />
+                  <FaCog className="text-gray-500 dark:text-gray-400" />
                   <span>Paramètres du compte</span>
                 </li>
                 <li
-                  className="flex items-center space-x-3 p-4 hover:bg-gray-100 cursor-pointer text-gray-800"
+                  className="flex items-center space-x-3 p-4 cursor-pointer
+                             text-gray-800 hover:bg-gray-100
+                             dark:text-gray-100 dark:hover:bg-gray-600
+                             transition-colors duration-200"
                   onClick={handleForgotPassword}
                 >
-                  <FaLock className="text-orange-500" />
+                  <FaLock className="text-orange-500 dark:text-orange-400" />
                   <span>Changer le mot de passe</span>
                 </li>
                 <li
-                  className="flex items-center space-x-3 p-4 hover:bg-red-100 cursor-pointer text-red-600"
+                  className="flex items-center space-x-3 p-4 cursor-pointer
+                             text-red-600 hover:bg-red-100
+                             dark:text-red-400 dark:hover:bg-red-900/50          {/* Rouge en mode sombre */}
+                             transition-colors duration-200"
                   onClick={handleLogout}
                 >
-                  <FaSignOutAlt className="text-red-500" />
+                  <FaSignOutAlt className="text-red-500 dark:text-red-400" />
                   <span>Déconnexion</span>
                 </li>
               </ul>
