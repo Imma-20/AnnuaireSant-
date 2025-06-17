@@ -1,7 +1,40 @@
+// tsconfig.app.json
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Le plus important pour React/JSX */
+    "jsx": "react-jsx", // <-- Ajoutez ou assurez-vous que cette ligne est présente
+
+    /* Autres options comme dans votre tsconfig.json principal, si elles s'appliquent ici */
+    "baseUrl": ".", // Assurez-vous que le baseUrl est aussi ici si nécessaire pour les chemins relatifs
+    "paths": {
+      "@/*": ["./src/*"] // Et les alias de chemins également, pour que TypeScript les comprenne
+    },
+
+    /* Résolution des modules */
+    "moduleResolution": "bundler", // ou "node", "nodenext" selon votre setup
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+
+    /* Vérifications de type */
+    "strict": true, // Souvent recommandé, mais vous l'avez désactivé dans votre tsconfig.json principal
+    "noUnusedLocals": false, // Selon votre préférence
+    "noUnusedParameters": false, // Selon votre préférence
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Options que vous avez désactivées dans le tsconfig.json principal, à réévaluer pour la stricte */
+    "noImplicitAny": false,
+    "strictNullChecks": false
+  },
+  "include": ["src"] // Assurez-vous que votre dossier 'src' est inclus ici
 }
