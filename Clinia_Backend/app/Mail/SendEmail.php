@@ -13,8 +13,7 @@ class SendEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    
-    public $link; // Ajoutez cette propriété
+    public $link; // Propriété publique pour passer le lien à la vue
 
     /**
      * Crée une nouvelle instance.
@@ -26,6 +25,8 @@ class SendEmail extends Mailable
 
     /**
      * Construisez le message.
+     * C'est la méthode principale pour définir le contenu de l'email.
+     * Note: La méthode `content()` est préférée dans les versions récentes de Laravel.
      */
     public function build()
     {
@@ -41,7 +42,7 @@ class SendEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Email de l\'annuaire de santé',
+            subject: 'Réinitialisation de votre mot de passe pour Clinia', // Sujet plus spécifique
         );
     }
 
@@ -50,8 +51,12 @@ class SendEmail extends Mailable
      */
     public function content(): Content
     {
+        // Retourne une nouvelle instance de Content pour la vue
         return new Content(
             view: 'emails.reset-password',
+            with: [
+                'link' => $this->link, // Passez le lien à la vue via la méthode content aussi
+            ]
         );
     }
 

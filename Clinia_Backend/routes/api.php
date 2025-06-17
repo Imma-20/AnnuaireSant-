@@ -19,7 +19,11 @@ use Illuminate\Support\Facades\Route;
 // Routes d'authentification (publiques)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+// Route pour la demande de mot de passe oublié
 Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
+
+// Nouvelle route pour la réinitialisation du mot de passe (via le lien de l'email)
+Route::post('/password/reset', [AuthController::class, 'resetPassword']);
 
 // Routes publiques pour la lecture des données (accessibles à tous)
 Route::get('/structures-sante', [StructureSanteController::class, 'index']);

@@ -27,7 +27,7 @@
             border-bottom: 1px solid #eee;
         }
         .header h1 {
-            color: #0056b3; /* Une couleur plus institutionnelle */
+            color: #0056b3;
             font-size: 24px;
             margin: 0;
         }
@@ -37,8 +37,8 @@
         }
         .button {
             display: inline-block;
-            background-color: #007bff; /* Couleur bleue standard pour les boutons */
-            color: #ffffff !important; /* Important pour s'assurer que le texte du lien reste blanc */
+            background-color: #22c55e; /* green-500 */
+            color: #ffffff !important;
             padding: 12px 25px;
             border-radius: 5px;
             text-decoration: none;
@@ -75,14 +75,14 @@
             <p style="text-align: center;">
                 <a href="{{ $link }}" class="button">Réinitialiser mon mot de passe</a>
             </p>
-            <p>Ce lien est valide pour une durée limitée. Si vous ne réinitialisez pas votre mot de passe dans ce délai, vous devrez faire une nouvelle demande.</p>
+            <p>Ce lien est valide pour une durée limitée (généralement 60 minutes). Si vous ne réinitialisez pas votre mot de passe dans ce délai, vous devrez faire une nouvelle demande.</p>
             <p>Si vous n'avez pas demandé cette réinitialisation, veuillez ignorer cet e-mail. Votre mot de passe actuel ne sera pas modifié.</p>
             <p>Merci,<br>L'équipe de Clinia</p>
         </div>
         <div class="footer">
             <p>Ceci est un e-mail automatique, merci de ne pas y répondre.</p>
             <p>&copy; {{ date('Y') }} Clinia. Tous droits réservés.</p>
-            <p> Abomey Calavi, Bénin</p>
+            <p>Abomey Calavi, Bénin</p>
         </div>
     </div>
 </body>

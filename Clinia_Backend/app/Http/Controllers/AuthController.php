@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-use App\Mail\SendEmail; 
+use App\Mail\SendEmail;
+use Carbon\Carbon; // Importez Carbon pour gérer les dates 
 
 
 /**
@@ -276,6 +277,13 @@ class AuthController extends Controller
      * "message": "Adresse email invalide ou non enregistrée."
      * }
      */
+    /**
+     * Gère la demande de mot de passe oublié.
+     * Génère un token, le stocke et envoie un email.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function forgotPassword(Request $request)
     {
         try {
@@ -283,20 +291,94 @@ class AuthController extends Controller
                 'email' => 'required|email|exists:utilisateurs,email',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['message' => 'Adresse email invalide ou non enregistrée.'], 422);
+            // Pour des raisons de sécurité, ne pas indiquer si l'email existe ou non.
+            // On peut envoyer un message générique pour éviter l'énumération d'utilisateurs.
+            return response()->json(['message' => 'Si cette adresse email est associée à un compte, un lien de réinitialisation vous a été envoyé.'], 200);
         }
 
+        // Générer un token unique et sécurisé
         $token = Str::random(60);
 
+        // Stocker ou mettre à jour le token dans la table password_resets
+        // La validité du token sera vérifiée à l'étape de réinitialisation
         DB::table('password_resets')->updateOrInsert(
             ['email' => $request->email],
-            ['token' => $token, 'created_at' => now()]
+            ['token' => $token, 'created_at' => Carbon::now()] // Utilisation de Carbon pour le timestamp
         );
 
+        // Construire le lien de réinitialisation pour le frontend
         $link = url(env('FRONTEND_URL', 'http://localhost:3000') . '/reset-password?token=' . $token . '&email=' . $request->email);
 
-        Mail::to($request->email)->send(new SendEmail($link));
+        // Envoyer l'email
+        try {
+            Mail::to($request->email)->send(new SendEmail($link));
+        } catch (\Exception $e) {
+            // Log l'erreur d'envoi d'email
+            Log::error('Erreur lors de l\'envoi de l\'email de réinitialisation: ' . $e->getMessage());
+            // Même si l'envoi échoue, on renvoie un message de succès générique pour ne pas donner d'indices.
+            return response()->json(['message' => 'Si cette adresse email est associée à un compte, un lien de réinitialisation vous a été envoyé.'], 200);
+        }
 
         return response()->json(['message' => 'Un lien de réinitialisation de mot de passe a été envoyé à votre adresse email.'], 200);
+    }
+
+    /**
+     * Gère la réinitialisation du mot de passe avec le token.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function resetPassword(Request $request)
+    {
+        try {
+            $request->validate([
+                'token' => 'required|string',
+                'email' => 'required|email|exists:utilisateurs,email',
+                'password' => 'required|string|min:8|confirmed', // 'confirmed' s'assure que password_confirmation correspond
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Retourne les erreurs de validation spécifiques
+            return response()->json(['message' => 'Erreur de validation.', 'errors' => $e->errors()], 422);
+        }
+
+        // 1. Trouver le token dans la base de données
+        $passwordReset = DB::table('password_resets')
+            ->where('email', $request->email)
+            ->where('token', $request->token)
+            ->first();
+
+        // 2. Vérifier si le token existe
+        if (!$passwordReset) {
+            return response()->json(['message' => 'Ce lien de réinitialisation de mot de passe est invalide.'], 404);
+        }
+
+        // 3. Vérifier si le token a expiré (par exemple, après 60 minutes)
+        $expirationTime = Carbon::parse($passwordReset->created_at)->addMinutes(60); // Token valide 60 minutes
+        if (Carbon::now()->isAfter($expirationTime)) {
+            // Supprimer le token expiré pour nettoyer la base
+            DB::table('password_resets')->where('email', $request->email)->delete();
+            return response()->json(['message' => 'Ce lien de réinitialisation de mot de passe a expiré. Veuillez refaire une demande.'], 400);
+        }
+
+        // 4. Trouver l'utilisateur et mettre à jour le mot de passe
+        // Assurez-vous que votre modèle Utilisateur a un champ 'password'
+        $user = DB::table('utilisateurs')->where('email', $request->email)->first();
+
+        if (!$user) {
+            // Cas improbable si 'exists' validation est passée, mais bonne sécurité en profondeur
+            return response()->json(['message' => 'Utilisateur introuvable.'], 404);
+        }
+
+        // Mettre à jour le mot de passe de l'utilisateur
+        // ATTENTION : Assurez-vous que 'utilisateurs' est le nom correct de votre table utilisateurs
+        // et que 'password' est le nom correct de la colonne du mot de passe.
+        DB::table('utilisateurs')
+            ->where('email', $request->email)
+            ->update(['password' => Hash::make($request->password)]);
+
+        // 5. Supprimer le token après utilisation pour éviter la réutilisation
+        DB::table('password_resets')->where('email', $request->email)->delete();
+
+        return response()->json(['message' => 'Votre mot de passe a été réinitialisé avec succès.'], 200);
     }
 }

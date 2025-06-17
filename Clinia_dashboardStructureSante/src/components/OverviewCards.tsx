@@ -18,13 +18,6 @@ const stats = [
     icon: ShoppingCart,
   },
   {
-    title: "Revenus Mensuels",
-    value: "12 000 000 FCFA",
-    change: "+46%",
-    changeType: "positive",
-    icon: DollarSign,
-  },
-  {
     title: "Taux d'Engagement",
     value: "89%",
     change: "+7%",
