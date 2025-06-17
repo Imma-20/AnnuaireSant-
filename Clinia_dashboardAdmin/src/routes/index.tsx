@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import LoginPage from '../pages/LoginPage';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import RegisterPage from '../pages/RegisterPage';
+import ResetPasswordPage from '../pages/ResetPasswordPage';
 
 // Composant de mise en page du tableau de bord (qui contient Sidebar et Navbar)
 import Dashboard from '../pages/Dashboard';
@@ -32,6 +33,8 @@ const AppRoutes: React.FC = () => {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/password-reset-confirmation" element={<PasswordResetConfirmation />} />
+          {/* Nouvelle route pour la réinitialisation du mot de passe */}
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           {/*
             Route imbriquée pour le Dashboard :
             Le composant 'Dashboard' sera rendu pour toutes les routes qui commencent par '/dashboard'.

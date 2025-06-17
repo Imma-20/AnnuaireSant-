@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react"; // Removed useState and useEffect as they are no longer needed for theme management here
 import { useNavigate } from "react-router-dom";
 import { FaHome, FaCog, FaSignOutAlt, FaCommentAlt, FaBell, FaBook } from "react-icons/fa";
 import { MdLocalHospital } from "react-icons/md";
+import { useTheme } from '../contexts/ThemeContext'; // Import useTheme to get current theme state
 
 interface SidebarProps {
     isMinimized: boolean;
@@ -9,22 +10,10 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isMinimized }) => {
     const navigate = useNavigate();
-    // État pour gérer le mode sombre (maintenu pour les styles conditionnels si d'autres parties de l'app utilisent le mode sombre)
-    const [isDarkMode] = useState(() => {
-        const savedMode = localStorage.getItem("darkMode");
-        return savedMode ? JSON.parse(savedMode) : false;
-    });
+    const { theme } = useTheme(); // Get the current theme from context
 
-    // Effet pour appliquer/supprimer la classe 'dark' au corps du document
-    // Ceci est maintenu pour que si le mode sombre est géré ailleurs, la sidebar réagisse
-    useEffect(() => {
-        if (isDarkMode) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-        // Pas besoin de sauvegarder la préférence ici car le bouton de bascule a été supprimé
-    }, [isDarkMode]);
+    // isDarkMode is now derived directly from the global theme context
+    const isDarkMode = theme === 'dark';
 
     const handleLogout = () => {
         localStorage.removeItem("authToken");
@@ -36,7 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMinimized }) => {
         <div className={`
             h-screen
             bg-green-600 text-white shadow-2xl
-            dark:bg-gray-900 dark:text-gray-100 dark:shadow-none {/* Styles du mode sombre */}
+            dark:bg-gray-900 dark:text-gray-100 dark:shadow-none {/* Dark mode styles */}
             transition-all duration-300 ease-in-out
             overflow-hidden
             flex flex-col
@@ -47,7 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMinimized }) => {
                 <div className="bg-white rounded-full p-2.5 shadow-lg dark:bg-gray-800"> {/* Mode sombre pour le fond du logo */}
                     <img
                         src="/assets/logo.png"
-                        alt="Logo"
+                        alt="Logo de l'application"
                         className={`object-cover ${isMinimized ? 'w-10 h-10' : 'w-16 h-16 rounded-full'}`}
                     />
                 </div>
