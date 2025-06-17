@@ -10,7 +10,7 @@ const FAQ = () => {
     {
       question: "Comment rechercher un établissement de santé ?",
       answer:
-        "Recherchez un établissement via la barre de recherche ou les catégories, puis cliquez sur le bouton 'Rechercher'. Choisissez la date, l’heure et remplissez les informations demandées."
+        "Recherchez un établissement via la barre de recherche puis cliquez sur le bouton 'Rechercher'. Ensuite sélectionnez selon votre choix le type de structure, l’assurance et remplissez les informations demandées."
     },
     {
       question: "Puis-je consulter la disponibilité des médecins ou spécialistes ?",
@@ -20,7 +20,7 @@ const FAQ = () => {
     {
       question: "Est-ce que l'application est gratuite à utiliser ?",
       answer:
-        "Oui, l’utilisation de l’application est entièrement gratuite pour les patients. Certaines fonctionnalités avancées peuvent être réservées aux professionnels de santé abonnés."
+        "Oui, l’utilisation de l’application est entièrement gratuite . Certaines fonctionnalités avancées peuvent être réservées aux professionnels de santé abonnés."
     },
     {
       question: "Comment savoir si un médicament est disponible dans une pharmacie ?",
@@ -35,7 +35,7 @@ const FAQ = () => {
     {
       question: "Comment signaler une erreur dans les informations d’un centre ?",
       answer:
-        "Chaque fiche dispose d’un bouton 'Signaler une erreur'. Cliquez dessus, décrivez le problème, et notre équipe se chargera de la vérification."
+        "Chaque fiche dispose d'une section  'Commenter'. Cliquez dessus, décrivez le problème, et notre équipe se chargera de la vérification."
     }
   ];
 
@@ -44,7 +44,7 @@ const FAQ = () => {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-foreground mb-4">
-            Questions fréquemment posées
+           FAQ
           </h2>
           <p className="text-muted-foreground text-lg">
             Trouvez rapidement les réponses à vos questions
