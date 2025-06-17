@@ -9,6 +9,7 @@ import SearchResultsPage from "./pages/SearchResults";
 import BusinessDetail from "./pages/BusinessDetail";
 import AjouterStructure from "./pages/AjouterStructure";
 import NotFound from "./pages/NotFound";
+import ConnexionUser from "./pages/ConnexionUser";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/recherche" element={<SearchResultsPage />} />
           <Route path="/centre/:id" element={<BusinessDetail />} />
           <Route path="/ajouter-centre" element={<AjouterStructure />} />
+            <Route path="/gerer-connexion" element={<ConnexionUser />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

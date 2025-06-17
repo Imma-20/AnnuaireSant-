@@ -3,6 +3,7 @@ import { Menu, X, User, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentHealthcareIndex, setCurrentHealthcareIndex] = useState(0);
@@ -38,8 +39,14 @@ const Header = () => {
   };
 
   const handleConnexion = () => {
-    navigate("/connexion");
+    navigate("/gerer-connexion");
   };
+
+  const handleConnexionGestion = () => {
+    navigate("/gerer-connexion");
+  };
+
+ 
 
   return (
     <header className="bg-white shadow-sm border-b border-border sticky top-0 z-50">
@@ -106,10 +113,12 @@ const Header = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => {
-                  handleConnexion();
+                
+               onClick={() => {
+                  handleConnexionGestion();
                   setIsMenuOpen(false);
                 }}
+                
                 className="self-start"
                 aria-label="Se connecter"
               >
