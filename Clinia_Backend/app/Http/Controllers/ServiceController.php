@@ -5,46 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Models\StructureSante;
+use Illuminate\Support\Facades\DB;
 
-/**
- * @group Gestion des Services
- *
- * Ces APIs gèrent la création, la consultation, la modification et la suppression des services de santé.
- * Les opérations de modification et suppression sont réservées aux administrateurs.
- */
+
 class ServiceController extends Controller
 {
-    /**
-     * Affiche une liste de tous les services.
-     *
-     * Cet endpoint est accessible à tous les utilisateurs et retourne la liste complète des services de santé disponibles.
-     *
-     * @response {
-     * "status": true,
-     * "services": [
-     * {
-     * "id_service": 1,
-     * "nom_service": "Consultation Générale",
-     * "description": "Consultation médicale de base.",
-     * "categorie": "Consultation",
-     * "created_at": "2023-10-27T10:00:00.000000Z",
-     * "updated_at": "2023-10-27T10:00:00.000000Z"
-     * },
-     * {
-     * "id_service": 2,
-     * "nom_service": "Radiologie",
-     * "description": "Examens d'imagerie médicale.",
-     * "categorie": "Imagerie",
-     * "created_at": "2023-10-27T10:05:00.000000Z",
-     * "updated_at": "2023-10-27T10:05:00.000000Z"
-     * }
-     * ]
-     * }
-     * @response 200 {
-     * "status": true,
-     * "services": []
-     * }
-     */
+    
     public function index()
     {
         $services = Service::all();
@@ -54,46 +21,7 @@ class ServiceController extends Controller
         ], 200);
     }
 
-    /**
-     * Crée un nouveau service.
-     *
-     * Cet endpoint permet à un administrateur d'ajouter un nouveau service de santé.
-     * Le `nom_service` doit être unique.
-     *
-     * @authenticated
-     * @bodyParam nom_service string required Le nom unique du service (max: 255 caractères). Example: Cardiologie
-     * @bodyParam description string Une description détaillée du service. Peut être nulle. Example: Spécialité médicale dédiée aux maladies du cœur.
-     * @bodyParam categorie string La catégorie du service (max: 255 caractères). Peut être nulle. Example: Spécialité
-     *
-     * @response 201 {
-     * "status": true,
-     * "message": "Service créé avec succès.",
-     * "service": {
-     * "id_service": 3,
-     * "nom_service": "Cardiologie",
-     * "description": "Spécialité médicale dédiée aux maladies du cœur.",
-     * "categorie": "Spécialité",
-     * "created_at": "2023-10-27T10:15:00.000000Z",
-     * "updated_at": "2023-10-27T10:15:00.000000Z"
-     * }
-     * }
-     * @response 400 {
-     * "status": false,
-     * "message": "Erreurs de validation.",
-     * "errors": {
-     * "nom_service": ["Le champ nom service est requis."],
-     * "nom_service": ["Le nom de service est déjà utilisé."]
-     * }
-     * }
-     * @response 401 {
-     * "status": false,
-     * "message": "Non authentifié. Vous devez être connecté pour créer un service."
-     * }
-     * @response 403 {
-     * "status": false,
-     * "message": "Accès refusé. Vous n'êtes pas autorisé à effectuer cette action (rôle admin requis)."
-     * }
-     */
+    
     public function store(Request $request)
     {
         // La vérification du rôle 'admin' sera faite par un middleware sur la route
@@ -120,29 +48,7 @@ class ServiceController extends Controller
         ], 201);
     }
 
-    /**
-     * Affiche un service spécifique.
-     *
-     * Cet endpoint permet de récupérer les détails d'un service spécifique en utilisant son ID unique.
-     * Accessible à tous les utilisateurs.
-     *
-     * @urlParam id_service int required L'ID unique du service à afficher. Example: 1
-     * @response {
-     * "status": true,
-     * "service": {
-     * "id_service": 1,
-     * "nom_service": "Consultation Générale",
-     * "description": "Consultation médicale de base.",
-     * "categorie": "Consultation",
-     * "created_at": "2023-10-27T10:00:00.000000Z",
-     * "updated_at": "2023-10-27T10:00:00.000000Z"
-     * }
-     * }
-     * @response 404 {
-     * "status": false,
-     * "message": "Service non trouvé."
-     * }
-     */
+    
     public function show($id_service)
     {
         $service = Service::find($id_service);
@@ -160,51 +66,7 @@ class ServiceController extends Controller
         ], 200);
     }
 
-    /**
-     * Met à jour un service existant.
-     *
-     * Cet endpoint permet à un administrateur de modifier les informations d'un service existant.
-     * Les champs non fournis dans la requête ne seront pas modifiés.
-     * Le `nom_service` doit rester unique, sauf s'il appartient au service en cours de modification.
-     *
-     * @authenticated
-     * @urlParam id_service int required L'ID unique du service à mettre à jour. Example: 1
-     * @bodyParam nom_service string Le nouveau nom du service. Max: 255 caractères. Doit être unique. Example: Médecine Générale
-     * @bodyParam description string La nouvelle description du service. Peut être nulle. Example: Prise en charge des pathologies courantes.
-     * @bodyParam categorie string La nouvelle catégorie du service. Peut être nulle. Example: Soins Primaires
-     *
-     * @response 200 {
-     * "status": true,
-     * "message": "Service mis à jour avec succès.",
-     * "service": {
-     * "id_service": 1,
-     * "nom_service": "Médecine Générale",
-     * "description": "Prise en charge des pathologies courantes.",
-     * "categorie": "Soins Primaires",
-     * "created_at": "2023-10-27T10:00:00.000000Z",
-     * "updated_at": "2023-10-27T10:20:00.000000Z"
-     * }
-     * }
-     * @response 404 {
-     * "status": false,
-     * "message": "Service non trouvé."
-     * }
-     * @response 400 {
-     * "status": false,
-     * "message": "Erreurs de validation.",
-     * "errors": {
-     * "nom_service": ["Le nom de service est déjà utilisé par un autre service."]
-     * }
-     * }
-     * @response 401 {
-     * "status": false,
-     * "message": "Non authentifié. Vous devez être connecté pour modifier un service."
-     * }
-     * @response 403 {
-     * "status": false,
-     * "message": "Accès refusé. Vous n'êtes pas autorisé à effectuer cette action (rôle admin requis)."
-     * }
-     */
+    
     public function update(Request $request, $id_service)
     {
         // La vérification du rôle 'admin' sera faite par un middleware sur la route
@@ -240,32 +102,7 @@ class ServiceController extends Controller
         ], 200);
     }
 
-    /**
-     * Supprime un service.
-     *
-     * Cet endpoint permet à un administrateur de supprimer définitivement un service de la base de données.
-     * La suppression est irréversible.
-     *
-     * @authenticated
-     * @urlParam id_service int required L'ID unique du service à supprimer. Example: 1
-     *
-     * @response 200 {
-     * "status": true,
-     * "message": "Service supprimé avec succès."
-     * }
-     * @response 404 {
-     * "status": false,
-     * "message": "Service non trouvé."
-     * }
-     * @response 401 {
-     * "status": false,
-     * "message": "Non authentifié. Vous devez être connecté pour supprimer un service."
-     * }
-     * @response 403 {
-     * "status": false,
-     * "message": "Accès refusé. Vous n'êtes pas autorisé à effectuer cette action (rôle admin requis)."
-     * }
-     */
+    
     public function destroy($id_service)
     {
         // La vérification du rôle 'admin' sera faite par un middleware sur la route
@@ -283,6 +120,50 @@ class ServiceController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Service supprimé avec succès.',
+        ], 200);
+    }
+
+    public function search(Request $request)
+    {
+        $query = StructureSante::with(['services', 'assurances'])
+            ->where('statut_verification', 'verifie');
+
+        // Filter by service IDs
+        if ($request->filled('service_ids')) {
+            $serviceIds = explode(',', $request->input('service_ids'));
+            $query->whereHas('services', function ($q) use ($serviceIds) {
+                $q->whereIn('id_service', $serviceIds);
+            });
+        }
+
+        // Filter by structure type
+        if ($request->filled('type_structure')) {
+            $query->where('type_structure', $request->input('type_structure'));
+        }
+
+        // Filter by insurance company IDs
+        if ($request->filled('assurance_ids')) {
+            $assuranceIds = explode(',', $request->input('assurance_ids'));
+            $query->whereHas('assurances', function ($q) use ($assuranceIds) {
+                $q->whereIn('id_assurance', $assuranceIds);
+            });
+        }
+
+        // Filter by geolocation and distance
+        if ($request->filled('user_latitude') && $request->filled('user_longitude') && $request->filled('radius')) {
+            $latitude = $request->input('user_latitude');
+            $longitude = $request->input('user_longitude');
+            $radius = $request->input('radius');
+
+            $query->selectRaw("*, (6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance", [$latitude, $longitude, $latitude])
+                  ->having('distance', '<=', $radius);
+        }
+
+        $structures = $query->get();
+
+        return response()->json([
+            'status' => true,
+            'structures' => $structures,
         ], 200);
     }
 }

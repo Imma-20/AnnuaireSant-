@@ -19,11 +19,13 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:5173'],
+    'allowed_origins' =>  ['*'],// Pour le développement, '*' est facile. Pour la production, listez vos domaines React.
+                                // Ou si vos 3 projets React sont sur des ports différents du même localhost:
+                                // ['http://localhost:5173', 'http://localhost:8081', 'http://localhost:8081']
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['*'],
+    'allowed_headers' => ['*'],// GET, POST, PUT, DELETE, etc.
 
     'exposed_headers' => [],
 

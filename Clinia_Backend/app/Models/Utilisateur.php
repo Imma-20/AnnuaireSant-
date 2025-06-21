@@ -33,7 +33,8 @@ class Utilisateur extends Authenticatable implements \Tymon\JWTAuth\Contracts\JW
     ];
 
     protected $casts = [
-        // 'email_verified_at' => 'datetime', // Décommentez si vous utilisez cette colonne dans la migration
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
         'derniere_connexion' => 'datetime',
     ];
 

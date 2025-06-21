@@ -1,0 +1,159 @@
+/* src/pages/StructureLocationPage.css */
+
+/* Styles généraux de la page */
+.structure-location-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Prend toute la hauteur de la vue */
+    background-color: #f8f9fa; /* Couleur de fond légère */
+}
+
+/* Conteneur principal du contenu (entre header et footer) */
+.location-content {
+    flex-grow: 1; /* Permet à la section principale de prendre l'espace disponible */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    max-width: 1200px; /* Limite la largeur du contenu */
+    margin: 0 auto; /* Centre le contenu horizontalement */
+    width: 100%; /* S'assure qu'il prend toute la largeur disponible dans les limites */
+}
+
+/* Section de l'en-tête de la page (titre et bouton) */
+.header-section {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e2e8f0; /* Petite bordure pour séparer */
+}
+
+.page-title {
+    font-size: 2.25rem; /* text-3xl de Tailwind */
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    align-items: center;
+}
+
+.page-title .icon { /* Icône MapPin dans le titre */
+    margin-right: 10px;
+    color: #28a745; /* Vert */
+}
+
+.close-button {
+    background-color: #f1f5f9; /* bg-gray-100 */
+    color: #4a5568; /* text-gray-600 */
+    border: 1px solid #cbd5e0; /* border-gray-300 */
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.close-button:hover {
+    background-color: #e2e8f0; /* hover:bg-gray-200 */
+    color: #2d3748; /* hover:text-gray-700 */
+}
+
+.close-button .icon {
+    margin-right: 8px;
+}
+
+.structure-address {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    color: #555;
+}
+
+/* Conteneur de la carte - TRÈS IMPORTANT pour la taille */
+.map-container-wrapper {
+    width: 100%;
+    height: 600px; /* Hauteur fixe pour la carte. Ajustez si nécessaire. */
+    border-radius: 8px;
+    overflow: hidden; /* Assure que le contenu arrondi ne dépasse pas */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Ombre légère */
+    margin-bottom: 20px; /* Espace sous la carte */
+}
+
+/* Les styles par défaut de MapContainer sont déjà définis par react-leaflet,
+   mais si vous avez besoin de les surcharger (ex: h-full w-full comme dans
+   StructureLocationMap.jsx), assurez-vous qu'ils s'appliquent bien ici. */
+/* Le MapComponent interne gère déjà sa propre taille avec style={height: '500px', width: '100%'}
+   mais la hauteur de '500px' doit être moins ou égale à la hauteur du conteneur parent (map-container-wrapper)
+   Si MapComponent a height: '500px', alors map-container-wrapper peut avoir 520px par exemple, ou juste la hauteur désirée.
+   Nous mettons une hauteur fixe sur le wrapper et nous nous assurerons que MapComponent prend 100% de cette hauteur. */
+.map-container-wrapper > .leaflet-container {
+    height: 100% !important; /* Assurez-vous que MapComponent prend toute la hauteur de son wrapper */
+    width: 100% !important;
+}
+
+
+/* Informations sur la distance */
+.distance-info {
+    width: 100%;
+    text-align: center;
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #e6ffed; /* bg-green-50 de Tailwind */
+    border: 1px solid #a7f3d0; /* border-green-200 */
+    border-radius: 8px;
+    color: #10b981; /* text-green-600 */
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.geolocation-note {
+    font-size: 0.9rem;
+    color: #6b7280; /* text-gray-500 */
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.geolocation-note .inline-icon {
+    margin-right: 5px;
+    color: #8b5cf6; /* Exemple de couleur pour l'icône */
+}
+
+/* Messages de chargement/erreur */
+.loading-message, .error-message, .no-data-message {
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 30px;
+    border-radius: 8px;
+    margin-top: 50px;
+}
+
+.loading-message {
+    background-color: #ebf8ff; /* bg-blue-50 */
+    color: #2b6cb0; /* text-blue-800 */
+    border: 1px solid #90cdf4; /* border-blue-300 */
+}
+
+.error-message {
+    background-color: #fee2e2; /* bg-red-100 */
+    color: #c53030; /* text-red-700 */
+    border: 1px solid #feb2b2; /* border-red-400 */
+}
+
+.no-data-message {
+     background-color: #fffbeb; /* bg-yellow-50 */
+    color: #d69e2e; /* text-yellow-700 */
+    border: 1px solid #fbd38d; /* border-yellow-400 */
+}
+
+/* Styles pour le Footer (si vous l'utilisez) */
+/* Supposons que votre Footer a déjà des styles */
+
+/* Styles pour le Header (si vous l'utilisez) */
+/* Supposons que votre Header a déjà des styles */

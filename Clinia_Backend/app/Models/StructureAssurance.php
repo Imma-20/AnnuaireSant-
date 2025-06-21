@@ -10,11 +10,7 @@ class StructureAssurance extends Model
 {
     use HasFactory;
 
-    protected $table = 'structure_assurances'; // Nom de la table pivot
-    // Pas de clé primaire 'id' par défaut, on utilise la clé composite
-    // Si vous aviez ajouté un ID auto-incrémenté à cette table, vous le spécifieriez ici.
-    // protected $primaryKey = 'id_composite';
-
+    protected $table = 'structure_assurances';
     public $incrementing = false; // Ne pas considérer 'id' comme auto-incrémenté
     protected $keyType = 'string'; // Peut être 'string' si la clé primaire composite n'est pas un entier
 

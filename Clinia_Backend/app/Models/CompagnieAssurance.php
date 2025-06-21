@@ -10,7 +10,7 @@ class CompagnieAssurance extends Model
 {
     use HasFactory;
 
-    protected $table = 'compagnies_assurance';
+    protected $table = 'compagnies_assurances';
     protected $primaryKey = 'id_assurance';
 
     protected $fillable = [

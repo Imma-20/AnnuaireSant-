@@ -1,3 +1,11 @@
+/* Dans votre fichier CSS global, par exemple src/index.css */
+@import 'leaflet/dist/leaflet.css';
+/* Assurez-vous aussi que le html et body prennent toute la hauteur */
+html, body, #root { /* #root si votre app est montée dans une div avec cet id */
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -40,3 +48,5 @@
 .read-the-docs {
   color: #888;
 }
+
+

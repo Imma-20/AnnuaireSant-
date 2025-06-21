@@ -5,6 +5,9 @@ import axios from "axios";
 import { FaEnvelope } from "react-icons/fa"; // Importe l'icône
 import { useNavigate } from "react-router-dom"; // Importe useNavigate pour la redirection
 
+
+// Page pour la réinitialisation du mot de passe
+// Cette page permet à l'utilisateur de demander un lien de réinitialisation de mot de passe
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState(""); // Pour les messages d'erreur sur cette page
@@ -40,7 +43,7 @@ const ForgotPasswordPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-600 p-4"> 
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100 p-4"> 
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-2xl shadow-xl transform transition-all duration-300 hover:scale-105">
         <div className="flex justify-center">
           <img

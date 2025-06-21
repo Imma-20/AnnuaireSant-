@@ -1,0 +1,184 @@
+/* Dans votre fichier CSS global, par exemple src/index.css */
+@import 'leaflet/dist/leaflet.css';
+/* Assurez-vous aussi que le html et body prennent toute la hauteur */
+html, body, #root { /* #root si votre app est montée dans une div avec cet id */
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* src/components/StructureLocationMap.css */
+
+/* Styles généraux de la page */
+.structure-location-map-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Prend toute la hauteur de la vue */
+    background-color: #f8f9fa; /* Couleur de fond légère */
+}
+
+/* Conteneur principal du contenu (entre header et footer) */
+.location-content-main {
+    flex-grow: 1; /* Permet à la section principale de prendre l'espace disponible */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    width: 100%;
+}
+
+/* La carte qui enveloppe le contenu de la page */
+.content-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    max-width: 1200px; /* Limite la largeur du contenu */
+    width: 100%;
+    box-sizing: border-box; /* Inclut le padding dans la largeur */
+}
+
+/* Section de l'en-tête de la page (titre et bouton) */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e2e8f0; /* Petite bordure pour séparer */
+}
+
+.page-title {
+    font-size: 2.25rem; /* text-3xl de Tailwind */
+    font-weight: 700; /* font-bold */
+    color: #2d3748; /* text-gray-800 */
+    display: flex;
+    align-items: center;
+}
+
+.page-title .icon { /* Icône MapPin dans le titre */
+    margin-right: 12px;
+    color: #28a745; /* Vert */
+}
+
+.close-button {
+    background-color: #f1f5f9; /* bg-gray-100 */
+    color: #4a5568; /* text-gray-600 */
+    border: 1px solid #cbd5e0; /* border-gray-300 */
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.close-button:hover {
+    background-color: #e2e8f0; /* hover:bg-gray-200 */
+    color: #2d3748; /* hover:text-gray-700 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.close-button .icon {
+    margin-right: 8px;
+}
+
+.structure-address {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.15rem;
+    color: #555;
+    font-weight: 400;
+}
+
+/* Conteneur de la carte - TRÈS IMPORTANT pour la taille */
+.map-container-wrapper {
+    width: 100%;
+    height: 550px; /* Hauteur fixe pour la carte. Ajustez si nécessaire. */
+    border-radius: 8px;
+    overflow: hidden; /* Assure que le contenu arrondi ne dépasse pas */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Ombre légère pour la carte elle-même */
+    margin-bottom: 30px; /* Espace sous la carte */
+}
+
+/* Styles par défaut de MapContainer (leaflet-container) */
+/* CIBLEZ DIRECTEMENT LA CLASSE LEAFLET POUR CONTRÔLER LA TAILLE */
+.map-container-wrapper > .leaflet-container {
+    height: 100% !important; /* Force la carte à prendre toute la hauteur du wrapper */
+    width: 100% !important;
+}
+
+/* Informations sur la distance et géolocalisation */
+.distance-info-section {
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+    padding: 18px;
+    background-color: #e6ffed; /* bg-green-50 de Tailwind */
+    border: 1px solid #a7f3d0; /* border-green-200 */
+    border-radius: 8px;
+    color: #10b981; /* text-green-600 */
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.distance-info-section p {
+    margin-bottom: 5px; /* Espace entre les paragraphes */
+}
+
+.geolocation-note {
+    font-size: 0.95rem;
+    color: #6b7280; /* text-gray-500 */
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.geolocation-note .inline-icon {
+    margin-right: 5px;
+    color: #8b5cf6; /* Couleur pour l'icône de géolocalisation */
+}
+
+/* Style pour le lien "Obtenir l'itinéraire" dans les popups */
+.map-directions-link {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 8px;
+    color: #007bff; /* Bleu standard pour les liens */
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+}
+
+.map-directions-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.map-directions-link .inline-icon {
+    margin-right: 4px;
+}
+
+
+/* Messages d'alerte/erreur */
+.error-alert {
+    background-color: #fee2e2; /* bg-red-100 */
+    border: 1px solid #fca5a5; /* border-red-400 */
+    color: #dc2626; /* text-red-700 */
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.error-alert strong {
+    font-weight: 700;
+}
+
+/* Styles pour le Header et le Footer (si vous les avez comme composants) */
+/* Supposons que Header et Footer ont leurs propres fichiers CSS ou sont stylés via Tailwind */

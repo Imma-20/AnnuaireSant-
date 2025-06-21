@@ -9,48 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth; // Nécessaire pour Auth::user()
 
-/**
- * @group Gestion des Assurances des Structures de Santé
- *
- * Ces APIs permettent de gérer les associations entre les structures de santé et les compagnies d'assurance.
- * Elles incluent la consultation des assurances d'une structure, l'ajout, la mise à jour et la suppression de ces associations.
- */
+
 class StructureAssuranceController extends Controller
 {
-    /**
-     * Affiche les assurances associées à une structure spécifique.
-     *
-     * Cet endpoint est accessible à tous et retourne la liste des compagnies d'assurance
-     * associées à une structure de santé donnée, à condition qu'elle soit vérifiée.
-     * Les modalités spécifiques de l'association sont également incluses.
-     *
-     * @urlParam id_structure int required L'ID unique de la structure de santé. Example: 1
-     * @response {
-     * "status": true,
-     * "assurances_de_la_structure": [
-     * {
-     * "id_assurance": 1,
-     * "nom_assurance": "Assurance Alpha",
-     * "description": "Compagnie d'assurance généraliste.",
-     * "contact": "info@alpha.com",
-     * "site_web": "http://www.alpha.com",
-     * "pivot": {
-     * "id_structure": 1,
-     * "id_assurance": 1,
-     * "modalites_specifiques": "Couverture à 80% pour les consultations."
-     * }
-     * }
-     * ]
-     * }
-     * @response 200 {
-     * "status": true,
-     * "assurances_de_la_structure": []
-     * }
-     * @response 404 {
-     * "status": false,
-     * "message": "Structure de santé non trouvée ou non vérifiée."
-     * }
-     */
+    
     public function indexByStructure($id_structure)
     {
         $structure = StructureSante::where('id_structure', $id_structure)
@@ -73,52 +35,7 @@ class StructureAssuranceController extends Controller
         ], 200);
     }
 
-    /**
-     * Associe une compagnie d'assurance à une structure de santé.
-     *
-     * Cet endpoint permet d'associer une compagnie d'assurance existante à une structure de santé,
-     * en spécifiant des modalités spécifiques pour cette association.
-     * Accessible aux administrateurs (pour toute structure) ou au gestionnaire de la structure concernée.
-     *
-     * @authenticated
-     * @urlParam id_structure int required L'ID unique de la structure de santé. Example: 1
-     * @bodyParam id_assurance int required L'ID unique de la compagnie d'assurance à associer. Doit exister. Example: 1
-     * @bodyParam modalites_specifiques string Les modalités ou conditions spécifiques de cette assurance pour la structure. Peut être nul (max: 1000 caractères). Example: Couverture étendue pour les urgences.
-     *
-     * @response 201 {
-     * "status": true,
-     * "message": "Compagnie d'assurance associée à la structure avec succès.",
-     * "structure_assurance": {
-     * "id_structure": 1,
-     * "id_assurance": 1,
-     * "modalites_specifiques": "Couverture étendue pour les urgences."
-     * }
-     * }
-     * @response 400 {
-     * "status": false,
-     * "message": "Erreurs de validation.",
-     * "errors": {
-     * "id_assurance": ["Le champ id assurance est requis."],
-     * "id_assurance": ["La compagnie d'assurance sélectionnée est invalide."]
-     * }
-     * }
-     * @response 401 {
-     * "status": false,
-     * "message": "Non authentifié. Vous devez être connecté pour associer une assurance."
-     * }
-     * @response 403 {
-     * "status": false,
-     * "message": "Accès refusé. Vous n'êtes pas autorisé à ajouter des assurances à cette structure."
-     * }
-     * @response 404 {
-     * "status": false,
-     * "message": "Structure de santé non trouvée."
-     * }
-     * @response 409 {
-     * "status": false,
-     * "message": "Cette compagnie d'assurance est déjà associée à cette structure."
-     * }
-     */
+    
     public function store(Request $request, $id_structure)
     {
         $user = Auth::user();
@@ -178,49 +95,7 @@ class StructureAssuranceController extends Controller
         ], 201);
     }
 
-    /**
-     * Met à jour les modalités d'une assurance associée à une structure.
-     *
-     * Cet endpoint permet de modifier les `modalites_specifiques` d'une association
-     * existante entre une structure de santé et une compagnie d'assurance.
-     * Accessible aux administrateurs (pour toute structure) ou au gestionnaire de la structure concernée.
-     *
-     * @authenticated
-     * @urlParam id_structure int required L'ID unique de la structure de santé. Example: 1
-     * @urlParam id_assurance int required L'ID unique de la compagnie d'assurance associée. Example: 1
-     * @bodyParam modalites_specifiques string Les nouvelles modalités ou conditions spécifiques. Peut être nul (max: 1000 caractères). Example: Couverture limitée pour les nouveaux adhérents.
-     *
-     * @response 200 {
-     * "status": true,
-     * "message": "Modalités d'assurance mises à jour avec succès pour la structure.",
-     * "structure_assurance": {
-     * "id_structure": 1,
-     * "id_assurance": 1,
-     * "modalites_specifiques": "Couverture limitée pour les nouveaux adhérents.",
-     * "created_at": "2023-10-27T10:00:00Z",
-     * "updated_at": "2023-10-27T10:45:00Z"
-     * }
-     * }
-     * @response 400 {
-     * "status": false,
-     * "message": "Erreurs de validation.",
-     * "errors": {
-     * "modalites_specifiques": ["Le champ modalites specifiques ne doit pas dépasser 1000 caractères."]
-     * }
-     * }
-     * @response 401 {
-     * "status": false,
-     * "message": "Non authentifié. Vous devez être connecté pour modifier les assurances."
-     * }
-     * @response 403 {
-     * "status": false,
-     * "message": "Accès refusé. Vous n'êtes pas autorisé à modifier les assurances de cette structure."
-     * }
-     * @response 404 {
-     * "status": false,
-     * "message": "Structure de santé non trouvée."
-     * }
-     */
+    
     public function update(Request $request, $id_structure, $id_assurance)
     {
         $user = Auth::user();
@@ -283,34 +158,7 @@ class StructureAssuranceController extends Controller
         ], 200);
     }
 
-    /**
-     * Dissocie une compagnie d'assurance d'une structure de santé.
-     *
-     * Cet endpoint permet de retirer une association existante entre une structure de santé et une compagnie d'assurance.
-     * La compagnie d'assurance elle-même n'est pas supprimée.
-     * Accessible aux administrateurs (pour toute structure) ou au gestionnaire de la structure concernée.
-     *
-     * @authenticated
-     * @urlParam id_structure int required L'ID unique de la structure de santé. Example: 1
-     * @urlParam id_assurance int required L'ID unique de la compagnie d'assurance à dissocier. Example: 1
-     *
-     * @response 200 {
-     * "status": true,
-     * "message": "Compagnie d'assurance dissociée de la structure avec succès."
-     * }
-     * @response 401 {
-     * "status": false,
-     * "message": "Non authentifié. Vous devez être connecté pour supprimer les assurances."
-     * }
-     * @response 403 {
-     * "status": false,
-     * "message": "Accès refusé. Vous n'êtes pas autorisé à supprimer les assurances de cette structure."
-     * }
-     * @response 404 {
-     * "status": false,
-     * "message": "Structure de santé non trouvée."
-     * }
-     */
+    
     public function destroy($id_structure, $id_assurance)
     {
         $user = Auth::user();
@@ -344,6 +192,50 @@ class StructureAssuranceController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Compagnie d\'assurance dissociée de la structure avec succès.',
+        ], 200);
+    }
+
+    public function search(Request $request)
+    {
+        $query = StructureSante::with(['services', 'assurances'])
+            ->where('statut_verification', 'verifie');
+
+        // Filter by service IDs
+        if ($request->filled('service_ids')) {
+            $serviceIds = explode(',', $request->input('service_ids'));
+            $query->whereHas('services', function ($q) use ($serviceIds) {
+                $q->whereIn('id_service', $serviceIds);
+            });
+        }
+
+        // Filter by structure type
+        if ($request->filled('type_structure')) {
+            $query->where('type_structure', $request->input('type_structure'));
+        }
+
+        // Filter by insurance company IDs
+        if ($request->filled('assurance_ids')) {
+            $assuranceIds = explode(',', $request->input('assurance_ids'));
+            $query->whereHas('assurances', function ($q) use ($assuranceIds) {
+                $q->whereIn('id_assurance', $assuranceIds);
+            });
+        }
+
+        // Filter by geolocation and distance
+        if ($request->filled('user_latitude') && $request->filled('user_longitude') && $request->filled('radius')) {
+            $latitude = $request->input('user_latitude');
+            $longitude = $request->input('user_longitude');
+            $radius = $request->input('radius');
+
+            $query->selectRaw("*, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance", [$latitude, $longitude, $latitude])
+                  ->having("distance", "<", $radius);
+        }
+
+        $structures = $query->get();
+
+        return response()->json([
+            'status' => true,
+            'structures' => $structures,
         ], 200);
     }
 }

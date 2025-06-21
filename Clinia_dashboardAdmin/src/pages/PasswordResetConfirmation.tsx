@@ -10,7 +10,7 @@ const PasswordResetConfirmation: React.FC = () => {
   const message = location.state?.message || "Un lien de réinitialisation a été envoyé à votre adresse e-mail. Veuillez vérifier votre boîte de réception (et vos spams).";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-600 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100 p-4">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-2xl shadow-lg text-center">
         <FaCheckCircle className="mx-auto h-20 w-20 text-green-500 mb-4 animate-bounce" /> {/* Icône animée */}
         <h2 className="text-3xl font-bold text-gray-800">Demande Envoyée !</h2>

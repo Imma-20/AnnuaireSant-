@@ -14,7 +14,18 @@ return new class extends Migration
         Schema::create('structures_santes', function (Blueprint $table) {
             $table->id('id_structure');
             $table->string('nom_structure');
-            $table->enum('type_structure', ['pharmacie', 'hopital', 'laboratoire', 'clinique', 'centre_medical', 'autre']);
+            $table->enum('type_structure', [
+                'pharmacie',
+                'hopital',
+                'laboratoire',
+                'clinique',
+                'centre_medical',
+                'veterinaire',        // Nouveau
+                'centre_reeducation', // Nouveau
+                'cabinet_dentaire',   // Nouveau
+                'cabinet_neurologie', // Nouveau (ou un autre nom pour "neurologue")
+                'autre'
+            ])->default('centre_medical');
             $table->string('adresse')->nullable();
             $table->string('quartier')->nullable();
             $table->string('ville')->nullable();

@@ -73,7 +73,7 @@ const ResetPasswordPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-600 p-4 dark:bg-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100 p-4 dark:bg-gray-900">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-2xl shadow-xl transform transition-all duration-300 hover:scale-105 dark:bg-gray-800 dark:text-gray-100">
         <div className="flex justify-center">
           <img

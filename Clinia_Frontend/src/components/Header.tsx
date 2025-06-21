@@ -1,12 +1,14 @@
+// src/components/Header.jsx
 import { useState, useEffect } from "react";
 import { Menu, X, User, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"; // En supposant que c'est votre composant Button de la bibliothèque UI
 import { useNavigate } from "react-router-dom";
-
+import logo from "/assets/logo.png"; // Assurez-vous que le chemin est correct
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentHealthcareIndex, setCurrentHealthcareIndex] = useState(0);
+  const [headerSearchQuery, setHeaderSearchQuery] = useState(""); // <-- Nouvel état pour la recherche de l'en-tête
   const navigate = useNavigate();
 
   const healthcareFacilities = [
@@ -17,7 +19,7 @@ const Header = () => {
     "cabinet d'imagerie",
     "cabinet dentaire",
     "ambulance et urgence",
-    "pharmacie"
+    "pharmacie",
   ];
 
   useEffect(() => {
@@ -46,7 +48,21 @@ const Header = () => {
     navigate("/gerer-connexion");
   };
 
- 
+  // <-- Nouveau gestionnaire de recherche pour l'en-tête
+  const handleHeaderSearch = () => {
+    const queryParams = new URLSearchParams();
+    if (headerSearchQuery.trim()) {
+        queryParams.append('keywords', headerSearchQuery.trim());
+    }
+    // Ajoutez ici d'autres paramètres si votre barre de recherche d'en-tête les gère (ex: type, ville)
+    navigate(`/search-results?${queryParams.toString()}`);
+  };
+
+  const handleHeaderKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleHeaderSearch();
+    }
+  };
 
   return (
     <header className="bg-white shadow-sm border-b border-border sticky top-0 z-50">
@@ -54,7 +70,9 @@ const Header = () => {
         <div className="flex justify-between items-center h-14">
           {/* Logo */}
           <div className="flex items-center space-x-3">
-            <div className="flex-shrink-0 cursor-pointer" onClick={handleLogoClick}>
+            <div className="flex-shrink-0 cursor-pointer flex items-center" onClick={handleLogoClick}>
+              {/* Ajout du logo ici */}
+              <img src={logo} alt="Application Logo" className="h-8 w-8 rounded-full mr-2" />
               <h1 className="text-2xl font-bold text-primary">
                 CLI<span className="text-green-600">NIA</span>
               </h1>
@@ -69,15 +87,21 @@ const Header = () => {
                 type="text"
                 placeholder={`${healthcareFacilities[currentHealthcareIndex]}...`}
                 className="flex-1 bg-transparent outline-none text-sm text-gray-400 placeholder-gray-400"
+                value={headerSearchQuery} // <-- Lier la valeur de l'entrée à l'état
+                onChange={(e) => setHeaderSearchQuery(e.target.value)} // <-- Mettre à jour l'état lors du changement
+                onKeyPress={handleHeaderKeyPress} // <-- Gérer la touche Entrée
               />
-              <Button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-full shadow-sm transition duration-300 ease-in-out text-sm font-semibold flex items-center">
+              <Button
+                onClick={handleHeaderSearch} // <-- Appeler le nouveau gestionnaire
+                className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-full shadow-sm transition duration-300 ease-in-out text-sm font-semibold flex items-center"
+              >
                 <Search className="w-4 h-4 mr-1" />
                 Rechercher
               </Button>
             </div>
           </div>
 
-          {/* Desktop Actions */}
+          {/* Actions Desktop */}
           <div className="hidden md:flex items-center space-x-4">
             <button
               onClick={handleConnexion}
@@ -93,7 +117,7 @@ const Header = () => {
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Bouton Menu Mobile */}
           <div className="md:hidden">
             <Button
               variant="ghost"
@@ -105,20 +129,41 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Navigation Mobile */}
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-border">
             <div className="flex flex-col space-y-4">
+              {/* Barre de recherche Mobile */}
+              <div className="flex items-center w-full bg-gray-100 border border-gray-300 rounded-full px-4 py-1">
+                <Search className="text-gray-500 w-4 h-4" />
+                <input
+                    type="text"
+                    placeholder={`${healthcareFacilities[currentHealthcareIndex]}...`}
+                    className="flex-1 bg-transparent outline-none text-sm text-gray-400 placeholder-gray-400"
+                    value={headerSearchQuery} // <-- Lier la valeur de l'entrée à l'état
+                    onChange={(e) => setHeaderSearchQuery(e.target.value)} // <-- Mettre à jour l'état lors du changement
+                    onKeyPress={handleHeaderKeyPress} // <-- Gérer la touche Entrée
+                />
+                <Button
+                    onClick={() => { // Gestionnaire distinct pour le bouton de recherche mobile afin de fermer le menu
+                        handleHeaderSearch();
+                        setIsMenuOpen(false);
+                    }}
+                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-full shadow-sm transition duration-300 ease-in-out text-sm font-semibold flex items-center"
+                >
+                    <Search className="w-4 h-4 mr-1" />
+                    Rechercher
+                </Button>
+              </div>
+
               {/* Icône Se connecter */}
               <Button
                 variant="ghost"
                 size="icon"
-                
-               onClick={() => {
+                onClick={() => {
                   handleConnexionGestion();
                   setIsMenuOpen(false);
                 }}
-                
                 className="self-start"
                 aria-label="Se connecter"
               >

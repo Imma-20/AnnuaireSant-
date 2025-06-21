@@ -1,19 +1,18 @@
+// src/components/Hero.jsx
 import { useState, useEffect } from "react";
 import { Search, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button"; // En supposant que c'est votre composant Button de la bibliothèque UI
+import { Input } from "@/components/ui/input";   // En supposant que c'est votre composant Input de la bibliothèque UI
 import { useNavigate } from "react-router-dom";
 
-interface HeroProps {
-  onSearch: (query: string, category: string) => void;
-}
+// Note: Suppression de la prop onSearch car la navigation sera gérée en interne
+// interface HeroProps { onSearch: (query: string, category: string) => void; }
 
-const Hero = ({ onSearch }: HeroProps) => {
+const Hero = () => { // Changement de prop à pas de props
   const [searchQuery, setSearchQuery] = useState("");
   const [currentTypeIndex, setCurrentTypeIndex] = useState(0);
   const navigate = useNavigate();
 
-  // Liste des types d'établissements de santé
   const healthCenterTypes = [
     "hôpital",
     "centre de rééducation",
@@ -22,7 +21,7 @@ const Hero = ({ onSearch }: HeroProps) => {
     "cabinet d'imagerie",
     "cabinet dentaire",
     "ambulance et urgence",
-    "pharmacie"
+    "pharmacie",
   ];
 
   useEffect(() => {
@@ -36,12 +35,17 @@ const Hero = ({ onSearch }: HeroProps) => {
   }, [healthCenterTypes.length]);
 
   const handleSearch = () => {
+    const queryParams = new URLSearchParams();
     if (searchQuery.trim()) {
-      navigate(`/recherche?q=${encodeURIComponent(searchQuery)}`);
+      // Utilisation du paramètre 'keywords' cohérent avec le backend
+      queryParams.append('keywords', searchQuery.trim());
     }
+    // Ajoutez ici d'autres paramètres si votre formulaire de recherche les gère (ex: type, ville)
+
+    navigate(`/search-results?${queryParams.toString()}`);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
@@ -53,7 +57,7 @@ const Hero = ({ onSearch }: HeroProps) => {
 
   return (
     <section className="relative min-h-[500px] bg-gradient-to-br from-green-700 via-green-600 to-green-800 overflow-hidden">
-      {/* Background decorative elements */}
+      {/* Éléments décoratifs d'arrière-plan */}
       <div className="absolute inset-0">
         <div className="absolute top-0 right-0 w-96 h-96 bg-green-500/20 rounded-full -translate-y-1/2 translate-x-1/2"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-green-400/20 rounded-full translate-y-1/2 -translate-x-1/2"></div>
@@ -67,7 +71,7 @@ const Hero = ({ onSearch }: HeroProps) => {
           Trouvez rapidement des établissements de santé près de chez vous.
         </p>
 
-        {/* Search Form */}
+        {/* Formulaire de recherche */}
         <div className="mb-8">
           <div className="max-w-2xl mx-auto relative">
             <Input
@@ -87,7 +91,7 @@ const Hero = ({ onSearch }: HeroProps) => {
           </div>
         </div>
 
-        {/* Action Buttons */}
+        {/* Boutons d'action */}
         <div className="flex flex-wrap justify-center gap-4">
           <Button
             onClick={handleAddBusiness}

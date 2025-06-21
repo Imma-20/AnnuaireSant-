@@ -53,7 +53,7 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-600 p-4"> {/* Ajout de p-4 pour le padding sur mobile */}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100 p-4"> {/* Ajout de p-4 pour le padding sur mobile */}
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-2xl shadow-lg">
         <div className="text-center">
           <img

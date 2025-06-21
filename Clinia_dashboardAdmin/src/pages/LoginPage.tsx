@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
-// Importe les icônes nécessaires (par exemple, de react-icons)
-// Assure-toi d'avoir installé react-icons : npm install react-icons
 import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -44,7 +42,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-600"> 
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100"> 
       {isLoading ? (
         // Écran de chargement
         <div className="flex flex-col items-center justify-center">
