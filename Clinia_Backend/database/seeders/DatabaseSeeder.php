@@ -15,7 +15,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             CompagnieAssuranceSeeder::class, // Assurez-vous que cette ligne est présente
-            // Ajoutez d'autres seeders ici si nécessaire
+            ServiceSeeder::class,
+            StructureSanteSeeder::class,
         ]);
     }
 }

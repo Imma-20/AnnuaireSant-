@@ -20,32 +20,34 @@ return new class extends Migration
                 'laboratoire',
                 'clinique',
                 'centre_medical',
-                'veterinaire',        // Nouveau
-                'centre_reeducation', // Nouveau
-                'cabinet_dentaire',   // Nouveau
-                'cabinet_neurologie', // Nouveau (ou un autre nom pour "neurologue")
-                'autre'
+                'veterinaire',
+                'centre_reeducation',
+                'cabinet_dentaire',
+                'cabinet_neurologie',
+                'autre',
+                'cabinet_imagerie', // <-- AJOUTEZ CETTE LIGNE
+                'ambulance'         // <-- AJOUTEZ CETTE LIGNE
             ])->default('centre_medical');
             $table->string('adresse')->nullable();
             $table->string('quartier')->nullable();
             $table->string('ville')->nullable();
             $table->string('commune')->nullable();
             $table->string('departement')->nullable();
-            $table->decimal('latitude', 10, 7)->nullable(); // Coordonnées GPS
-            $table->decimal('longitude', 10, 7)->nullable(); // Coordonnées GPS
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
             $table->string('telephone_principal')->nullable();
             $table->string('telephone_secondaire')->nullable();
             $table->string('email_contact')->unique()->nullable();
             $table->string('site_web')->nullable();
-            $table->json('horaires_ouverture')->nullable(); // Stocke les horaires au format JSON
+            $table->json('horaires_ouverture')->nullable();
             $table->boolean('est_de_garde')->default(false);
             $table->date('periode_garde_debut')->nullable();
             $table->date('periode_garde_fin')->nullable();
             $table->text('description')->nullable();
-            $table->string('logo')->nullable(); // Chemin vers l'image du logo
+            $table->string('logo')->nullable();
             $table->enum('statut_verification', ['en_attente', 'verifie', 'rejete'])->default('en_attente');
-            $table->foreignId('id_utilisateur')->nullable()->constrained('utilisateurs', 'id_utilisateur')->onDelete('set null'); // FK vers l'administrateur de la structure
-            $table->timestamps(); // date_creation et date_modification
+            $table->foreignId('id_utilisateur')->nullable()->constrained('utilisateurs', 'id_utilisateur')->onDelete('set null');
+            $table->timestamps();
         });
     }
 

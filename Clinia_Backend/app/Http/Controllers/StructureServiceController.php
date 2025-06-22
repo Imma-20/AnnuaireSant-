@@ -9,48 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth; // Nécessaire pour Auth::user()
 
-/**
- * @group Gestion des Services des Structures de Santé
- *
- * Ces APIs permettent de gérer les services offerts par les structures de santé.
- * Elles incluent la consultation des services d'une structure, l'ajout, la mise à jour et la suppression de ces associations.
- */
+
 class StructureServiceController extends Controller
 {
-    /**
-     * Affiche les services associés à une structure spécifique.
-     *
-     * Cet endpoint est accessible à tous et retourne la liste des services
-     * associés à une structure de santé donnée, à condition qu'elle soit vérifiée.
-     * Les informations pivot comme la `disponibilite` et les `informations_supplementaires` sont incluses.
-     *
-     * @urlParam id_structure int required L'ID unique de la structure de santé. Example: 1
-     * @response {
-     * "status": true,
-     * "services_de_la_structure": [
-     * {
-     * "id_service": 1,
-     * "nom_service": "Consultation Générale",
-     * "description": "Consultation médicale de base.",
-     * "categorie": "Consultation",
-     * "pivot": {
-     * "id_structure": 1,
-     * "id_service": 1,
-     * "disponibilite": "disponible",
-     * "informations_supplementaires": "Pas de rendez-vous nécessaire."
-     * }
-     * }
-     * ]
-     * }
-     * @response 200 {
-     * "status": true,
-     * "services_de_la_structure": []
-     * }
-     * @response 404 {
-     * "status": false,
-     * "message": "Structure de santé non trouvée ou non vérifiée."
-     * }
-     */
+    
     public function indexByStructure($id_structure)
     {
         $structure = StructureSante::where('id_structure', $id_structure)

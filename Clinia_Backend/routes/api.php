@@ -12,6 +12,7 @@ use App\Http\Controllers\StructureApplicationController;
 use App\Http\Controllers\StructureServiceController;
 use App\Http\Controllers\StructureAssuranceController;
 use App\Http\Controllers\StockProduitController;
+use App\Http\Controllers\TypeStructureController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -30,7 +31,8 @@ Route::post('/admin/register', [AuthController::class, 'registerAdmin']);
 Route::get('/structures', [StructureSanteController::class, 'index']);
 Route::get('/structures/search', [StructureSanteController::class, 'search']); // Placer avant {id}
 Route::get('/structures-counts', [StructureSanteController::class, 'getStructuresCounts']);
-Route::get('/structures/{id_structure}', [StructureSanteController::class, 'show']); // Utilisation de {id_structure} pour la cohérence
+Route::get('/structures/{id_structure}', [StructureSanteController::class, 'show']); 
+Route::get('/structure-types', [TypeStructureController::class, 'index']);
 
 // Services
 Route::get('/services', [ServiceController::class, 'index']);

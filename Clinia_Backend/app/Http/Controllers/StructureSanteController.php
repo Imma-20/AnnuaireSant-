@@ -11,7 +11,7 @@ use Carbon\Carbon;
 
 class StructureSanteController extends Controller
 {
-    private const VALID_STRUCTURE_TYPES = [
+    public const VALID_STRUCTURE_TYPES = [
         'pharmacie',
         'hopital',
         'laboratoire',

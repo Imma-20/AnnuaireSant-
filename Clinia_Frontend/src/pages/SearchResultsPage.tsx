@@ -1,9 +1,9 @@
 // src/pages/SearchResultsPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axiosConfig'; // Assurez-vous que le chemin est correct
-import Header from '../components/Header'; // Si vous l'utilisez
-import Footer from '../components/Footer'; // Si vous l'utilisez
+import api from '../api/axiosConfig'; 
+import Header from '../components/Header'; 
+import Footer from '../components/Footer'; 
 import { Building2, Hospital, Stethoscope, FlaskConical, Syringe, BriefcaseMedical, HeartPulse, Search, MapPin, XCircle } from 'lucide-react'; // Icônes
 
 // Vous aurez besoin d'une fonction pour mapper les noms d'icônes aux composants d'icônes

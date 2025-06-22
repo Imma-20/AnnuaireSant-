@@ -49,6 +49,22 @@ class StructureSante extends Model
         'periode_garde_fin' => 'date', // Cast en objet Carbon
     ];
 
+    // !!! C'EST ICI QUE LA CONSTANTE DOIT ÊTRE DÉFINIE !!!
+    public const VALID_STRUCTURE_TYPES = [
+        'pharmacie',
+        'hopital',
+        'laboratoire',
+        'clinique',
+        'centre_medical',
+        'veterinaire',
+        'centre_reeducation',
+        'cabinet_dentaire',
+        'cabinet_neurologie',
+        'autre',
+        'cabinet_imagerie',
+        'ambulance'
+    ];
+
     // Relation Many-to-Many avec les Services
     public function services(): BelongsToMany
     {
