@@ -1,393 +1,411 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Mail, Lock, User, UserPlus, Phone } from 'lucide-react';
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from '@/context/AuthContext';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"; // Assuming you have a Select component in your shadcn/ui
 
-// N'oubliez pas d'importer ces composants si vous utilisez Shadcn UI pour les radios
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
-
-const ConnexionUser = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    prenom: '',
-    nom: '',
-    email: '',
-    telephone: '',
-    password: '',
-    password_confirmation: ''
-  });
-  // NOUVEAU: État pour le rôle sélectionné, par défaut 'user'
-  const [selectedRole, setSelectedRole] = useState<'user' | 'health_structure'>('user');
-
-  const [passwordMatchError, setPasswordMatchError] = useState(false);
-  const [backendError, setBackendError] = useState('');
-
+const AjouterStructure = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
-  const { login, register, loadingAuth } = useAuth();
 
-  useEffect(() => {
-    const savedEmail = localStorage.getItem('rememberMeEmail');
-    if (savedEmail) {
-      setFormData(prev => ({ ...prev, email: savedEmail }));
-    }
-  }, []);
+  const [formData, setFormData] = useState({
+    nom_structure: "",
+    type_structure: "",
+    description: "",
+    logo: null,
+    adresse: "",
+    quartier: "",
+    ville: "",
+    commune: "",
+    departement: "",
+    latitude: "",
+    longitude: "",
+    telephone_principal: "",
+    telephone_secondaire: "",
+    email_contact: "",
+    site_web: "",
+    horaires_ouverture: "", // This will be a string for now, could be JSON later
+    est_de_garde: false,
+    periode_garde_debut: "",
+    periode_garde_fin: "",
+  });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-    // Réinitialiser les erreurs liées aux mots de passe ou aux champs standards
-    if (e.target.name === 'password' || e.target.name === 'password_confirmation') {
-      setBackendError('');
-      setPasswordMatchError(false);
-    }
-    if (['email', 'prenom', 'nom', 'telephone'].includes(e.target.name)) {
-      setBackendError('');
-    }
-  };
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value, type, files, checked } = e.target as
+      | HTMLInputElement
+      | HTMLTextAreaElement;
 
-  // NOUVEAU: Gérer le changement de rôle
-  const handleRoleChange = (value: 'user' | 'health_structure') => {
-    setSelectedRole(value);
-    setBackendError(''); // Réinitialiser l'erreur si l'utilisateur change de rôle
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setBackendError(''); // Toujours réinitialiser les erreurs au début de la soumission
-
-    if (isLogin) {
-      // Logique de connexion
-      try {
-        await login(formData.email, formData.password);
-        toast({
-          title: "Connexion réussie",
-          description: "Bienvenue !",
-        });
-      } catch (error: any) {
-        // Gérer les messages d'erreur du backend plus proprement
-        const errorMessage = error.message || "Une erreur inconnue est survenue.";
-        setBackendError(errorMessage);
-        toast({
-          title: "Erreur de connexion",
-          description: errorMessage,
-          variant: "destructive",
-        });
-      }
+    if (type === "file" && files) {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: files[0],
+      }));
+    } else if (type === "checkbox") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: checked,
+      }));
     } else {
-      // Logique d'inscription
-      if (formData.password !== formData.password_confirmation) {
-        setPasswordMatchError(true);
-        setBackendError('Les mots de passe ne correspondent pas.');
-        toast({
-          title: "Erreur d'inscription",
-          description: "Les mots de passe ne correspondent pas.",
-          variant: "destructive",
-        });
-        return; // Arrêter l'exécution si les mots de passe ne correspondent pas
-      }
-
-      try {
-        await register(
-          formData.prenom,
-          formData.nom,
-          formData.email,
-          formData.telephone,
-          formData.password,
-          formData.password_confirmation,
-          selectedRole // <-- C'est ici que nous passons le rôle sélectionné !
-        );
-        toast({
-          title: "Inscription réussie",
-          description: "Votre compte a été créé !",
-        });
-        // Optionnel: Réinitialiser le formulaire après une inscription réussie
-        setFormData({
-            prenom: '',
-            nom: '',
-            email: '',
-            telephone: '',
-            password: '',
-            password_confirmation: ''
-        });
-        setSelectedRole('user'); // Réinitialiser le rôle par défaut
-        setIsLogin(true); // Rediriger l'utilisateur vers la page de connexion
-      } catch (error: any) {
-        // Gérer les messages d'erreur du backend plus proprement
-        const errorMessage = error.message || "Une erreur inconnue est survenue.";
-        setBackendError(errorMessage);
-        toast({
-          title: "Erreur d'inscription",
-          description: errorMessage,
-          variant: "destructive",
-        });
-      }
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.nom_structure || !formData.type_structure) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez remplir tous les champs obligatoires (*)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    console.log("Form submitted:", formData);
+
+    toast({
+      title: "Succès",
+      description: "Structure de santé ajoutée avec succès !",
+    });
+
+    // Reset form
+    setFormData({
+      nom_structure: "",
+      type_structure: "",
+      description: "",
+      logo: null,
+      adresse: "",
+      quartier: "",
+      ville: "",
+      commune: "",
+      departement: "",
+      latitude: "",
+      longitude: "",
+      telephone_principal: "",
+      telephone_secondaire: "",
+      email_contact: "",
+      site_web: "",
+      horaires_ouverture: "",
+      est_de_garde: false,
+      periode_garde_debut: "",
+      periode_garde_fin: "",
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <User className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            {isLogin ? 'Connexion' : 'Inscription'}
-          </h1>
-          <p className="text-gray-600">
-            {isLogin
-              ? 'Connectez-vous à votre compte'
-              : 'Créez votre compte pour accéder aux fonctionnalités personnalisées'
-            }
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-600 to-green-500 px-4 py-8">
+      <div
+        className="absolute top-6 left-6 flex items-center space-x-2 cursor-pointer"
+        onClick={() => navigate("/")}
+      >
+        <LogOut className="w-5 h-5 text-white" />
+        <span className="text-white text-lg font-medium">
+          Retour à la page d'accueil
+        </span>
+      </div>
+
+      <Card className="w-full max-w-2xl rounded-2xl shadow-lg bg-white">
+        <CardHeader>
+          <CardTitle className="text-2xl text-center text-green-700">
+            Fiche d'Ajout de Structure de Santé
+          </CardTitle>
+          <p className="text-center text-gray-500 text-sm">
+            Veuillez remplir les informations de la structure.
           </p>
-          {backendError && (
-            <p className="text-red-500 text-sm mt-2">{backendError}</p>
-          )}
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {!isLogin && (
-            <>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="prenom" className="text-gray-700 font-medium">
-                    Prénom
-                  </Label>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-green-700">
+                Informations Générales
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="nom_structure">Nom de la structure *</Label>
                   <Input
-                    id="prenom"
-                    name="prenom"
-                    type="text"
-                    value={formData.prenom}
+                    id="nom_structure"
+                    name="nom_structure"
+                    value={formData.nom_structure}
                     onChange={handleInputChange}
-                    className="mt-1 border-gray-300 focus:border-green-500 focus:ring-green-500"
-                    placeholder="Votre prénom"
                     required
                   />
                 </div>
-                <div>
-                  <Label htmlFor="nom" className="text-gray-700 font-medium">
-                    Nom
-                  </Label>
-                  <Input
-                    id="nom"
-                    name="nom"
-                    type="text"
-                    value={formData.nom}
-                    onChange={handleInputChange}
-                    className="mt-1 border-gray-300 focus:border-green-500 focus:ring-green-500"
-                    placeholder="Votre nom"
-                    required
-                  />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="telephone" className="text-gray-700 font-medium">
-                  Téléphone
-                </Label>
-                <div className="relative mt-1">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <Input
-                    id="telephone"
-                    name="telephone"
-                    type="tel"
-                    value={formData.telephone}
-                    onChange={handleInputChange}
-                    className="pl-10 border-gray-300 focus:border-green-500 focus:ring-green-500"
-                    placeholder="Ex: 0123456789"
-                    required
-                  />
+                <div className="space-y-1">
+                  <Label htmlFor="type_structure">Type de structure *</Label>
+                  <Select
+                    onValueChange={(value) =>
+                      handleSelectChange("type_structure", value)
+                    }
+                    value={formData.type_structure}
+                  >
+                    <SelectTrigger id="type_structure">
+                      <SelectValue placeholder="Sélectionnez un type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pharmacie">Pharmacie</SelectItem>
+                      <SelectItem value="hopital">Hôpital</SelectItem>
+                      <SelectItem value="laboratoire">Laboratoire</SelectItem>
+                      <SelectItem value="clinique">Clinique</SelectItem>
+                      <SelectItem value="centre_medical">
+                        Centre Médical
+                      </SelectItem>
+                      <SelectItem value="autre">Autre</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
-              {/* NOUVEAU: Sélecteur de Rôle */}
-              <div className="space-y-2">
-                <Label className="text-gray-700 font-medium">Vous êtes ?</Label>
-                <RadioGroup
-                  defaultValue="user"
-                  value={selectedRole} // Connecte la RadioGroup à l'état selectedRole
-                  onValueChange={handleRoleChange} // Gère les changements de valeur
-                  className="flex flex-col space-y-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="user" id="role-user" />
-                    <Label htmlFor="role-user">Un utilisateur individuel</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="health_structure" id="role-health_structure" />
-                    <Label htmlFor="role-health_structure">Une structure de santé</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-              {/* FIN NOUVEAU: Sélecteur de Rôle */}
-
-            </>
-          )}
-
-          <div>
-            <Label htmlFor="email" className="text-gray-700 font-medium">
-              Email
-            </Label>
-            <div className="relative mt-1">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="pl-10 border-gray-300 focus:border-green-500 focus:ring-green-500"
-                placeholder="votre@email.com"
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="password" className="text-gray-700 font-medium">
-              Mot de passe
-            </Label>
-            <div className="relative mt-1">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <Input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                value={formData.password}
-                onChange={handleInputChange}
-                className="pl-10 pr-10 border-gray-300 focus:border-green-500 focus:ring-green-500"
-                placeholder="Votre mot de passe"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
-          </div>
-
-          {!isLogin && (
-            <div>
-              <Label htmlFor="password_confirmation" className="text-gray-700 font-medium">
-                Confirmer mot de passe
-              </Label>
-              <div className="relative mt-1">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <Input
-                  id="password_confirmation"
-                  name="password_confirmation"
-                  type={showConfirmPassword ? "text" : "password"}
-                  value={formData.password_confirmation}
+              <div className="space-y-1">
+                <Label htmlFor="description">Description (facultatif)</Label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
                   onChange={handleInputChange}
-                  className={`pl-10 pr-10 border-gray-300 focus:border-green-500 focus:ring-green-500 ${
-                    passwordMatchError ? 'border-red-500' : ''
-                  }`}
-                  placeholder="Confirmez votre mot de passe"
+                  placeholder="Décrivez la structure, ses spécialités, etc."
+                  rows={3}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="logo">Logo de la structure (facultatif)</Label>
+                <Input
+                  id="logo"
+                  name="logo"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-green-700">Adresse</h3>
+              <div className="space-y-1">
+                <Label htmlFor="adresse">Adresse complète *</Label>
+                <Input
+                  id="adresse"
+                  name="adresse"
+                  value={formData.adresse}
+                  onChange={handleInputChange}
+                  placeholder="Ex: 123 Rue de la Santé"
                   required
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
               </div>
-              {passwordMatchError && (
-                <p className="text-red-500 text-sm mt-1">Les mots de passe ne correspondent pas.</p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="quartier">Quartier (facultatif)</Label>
+                  <Input
+                    id="quartier"
+                    name="quartier"
+                    value={formData.quartier}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="ville">Ville (facultatif)</Label>
+                  <Input
+                    id="ville"
+                    name="ville"
+                    value={formData.ville}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="commune">Commune (facultatif)</Label>
+                  <Input
+                    id="commune"
+                    name="commune"
+                    value={formData.commune}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="departement">Département (facultatif)</Label>
+                  <Input
+                    id="departement"
+                    name="departement"
+                    value={formData.departement}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="latitude">Latitude (facultatif)</Label>
+                  <Input
+                    id="latitude"
+                    name="latitude"
+                    type="number"
+                    step="any"
+                    value={formData.latitude}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="longitude">Longitude (facultatif)</Label>
+                  <Input
+                    id="longitude"
+                    name="longitude"
+                    type="number"
+                    step="any"
+                    value={formData.longitude}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-green-700">Contact</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="telephone_principal">
+                    Téléphone Principal (facultatif)
+                  </Label>
+                  <Input
+                    id="telephone_principal"
+                    name="telephone_principal"
+                    value={formData.telephone_principal}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="telephone_secondaire">
+                    Téléphone Secondaire (facultatif)
+                  </Label>
+                  <Input
+                    id="telephone_secondaire"
+                    name="telephone_secondaire"
+                    value={formData.telephone_secondaire}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="email_contact">Email de contact (facultatif)</Label>
+                  <Input
+                    id="email_contact"
+                    name="email_contact"
+                    type="email"
+                    value={formData.email_contact}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="site_web">Site Web (facultatif)</Label>
+                  <Input
+                    id="site_web"
+                    name="site_web"
+                    type="url"
+                    value={formData.site_web}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-green-700">
+                Horaires et Garde
+              </h3>
+              <div className="space-y-1">
+                <Label htmlFor="horaires_ouverture">
+                  Horaires d'ouverture (format libre, ex: Lun-Ven 8h-18h)
+                </Label>
+                <Textarea
+                  id="horaires_ouverture"
+                  name="horaires_ouverture"
+                  value={formData.horaires_ouverture}
+                  onChange={handleInputChange}
+                  rows={2}
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Input
+                  id="est_de_garde"
+                  name="est_de_garde"
+                  type="checkbox"
+                  checked={formData.est_de_garde}
+                  onChange={handleInputChange}
+                  className="w-4 h-4"
+                />
+                <Label htmlFor="est_de_garde">Est de garde ?</Label>
+              </div>
+
+              {formData.est_de_garde && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="periode_garde_debut">
+                      Début Période de Garde
+                    </Label>
+                    <Input
+                      id="periode_garde_debut"
+                      name="periode_garde_debut"
+                      type="date"
+                      value={formData.periode_garde_debut}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="periode_garde_fin">
+                      Fin Période de Garde
+                    </Label>
+                    <Input
+                      id="periode_garde_fin"
+                      name="periode_garde_fin"
+                      type="date"
+                      value={formData.periode_garde_fin}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
               )}
             </div>
-          )}
 
-          {isLogin && (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="rememberMe"
-                  name="rememberMe"
-                  type="checkbox"
-                  checked={localStorage.getItem('rememberMeEmail') === formData.email}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      localStorage.setItem('rememberMeEmail', formData.email);
-                    } else {
-                      localStorage.removeItem('rememberMeEmail');
-                    }
-                  }}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <Label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-900">
-                  Se souvenir de moi
-                </Label>
-              </div>
-              <button
-                type="button"
-                className="text-sm text-green-600 hover:text-green-700 hover:underline"
-              >
-                Mot de passe oublié ?
-              </button>
-            </div>
-          )}
-
-          <Button
-            type="submit"
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 rounded-lg transition-colors"
-            disabled={loadingAuth}
-          >
-            {loadingAuth ? (
-              'Chargement...'
-            ) : isLogin ? (
-              <>
-                <User className="w-5 h-5 mr-2" />
-                Se connecter
-              </>
-            ) : (
-              <>
-                <UserPlus className="w-5 h-5 mr-2" />
-                S'inscrire
-              </>
-            )}
-          </Button>
-        </form>
-
-        <div className="mt-8 text-center">
-          <p className="text-gray-600">
-            {isLogin ? "Vous n'avez pas de compte ?" : "Vous avez déjà un compte ?"}
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-                setIsLogin(!isLogin);
-                setBackendError('');
-                setPasswordMatchError(false);
-                setFormData({
-                    prenom: '',
-                    nom: '',
-                    email: '',
-                    telephone: '',
-                    password: '',
-                    password_confirmation: ''
-                });
-                setSelectedRole('user'); // Réinitialiser le rôle par défaut lors du changement de mode
-            }}
-            className="mt-2 text-green-600 hover:text-green-700 font-medium hover:underline"
-          >
-            {isLogin ? "Créer un compte" : "Se connecter"}
-          </button>
-        </div>
-      </div>
+            <Button
+              type="submit"
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold"
+            >
+              Ajouter la structure
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
-export default ConnexionUser;
+export default AjouterStructure;

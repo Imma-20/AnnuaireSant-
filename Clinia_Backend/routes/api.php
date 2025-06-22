@@ -22,6 +22,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
 Route::post('/password/reset', [AuthController::class, 'resetPassword']);
 
+Route::post('/admin/register', [AuthController::class, 'registerAdmin']);
+
 // --- Routes publiques pour la lecture des données (accessibles à tous) ---
 
 // Structures de santé

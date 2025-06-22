@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Relations\HasMany; // Importez HasMany
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Utilisateur extends Authenticatable implements \Tymon\JWTAuth\Contracts\JWTSubject
+class Utilisateur extends Authenticatable 
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -37,17 +37,6 @@ class Utilisateur extends Authenticatable implements \Tymon\JWTAuth\Contracts\JW
         'password' => 'hashed',
         'derniere_connexion' => 'datetime',
     ];
-
-    // Implémentation des méthodes JWTSubject (si vous utilisez JWTAuth séparément de Sanctum)
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
-
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
 
     /**
      * Un utilisateur peut avoir plusieurs recherches.
