@@ -1,9 +1,9 @@
 // src/pages/SearchResultsPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axiosConfig'; 
-import Header from '../components/Header'; 
-import Footer from '../components/Footer'; 
+import api from '../api/axiosConfig';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import { Building2, Hospital, Stethoscope, FlaskConical, Syringe, BriefcaseMedical, HeartPulse, Search, MapPin, XCircle } from 'lucide-react'; // Icônes
 
 // Vous aurez besoin d'une fonction pour mapper les noms d'icônes aux composants d'icônes
@@ -55,35 +55,39 @@ const SearchResultsPage = () => {
             setFilterError(null);
             try {
                 // Récupérer les types de structure
-                const typesResponse = await api.get('/structure-types'); // Endpoint supposé
-                // Ajouter une option "Tous les types" en premier
-                const dynamicTypes = [{ value: '', label: 'Tous les types', icon_name: 'Building2' }, // Utilise icon_name
-                                      ...typesResponse.data.data.map(type => ({
-                                          value: type.slug || type.nom.toLowerCase().replace(/\s/g, '_'),
-                                          label: type.nom,
-                                          icon_name: type.icon_name || 'Building2'
-                                      }))
-                                     ];
+                const typesResponse = await api.get('/structure-types');
+                const typesData = typesResponse.data?.data ?? [];
+                const dynamicTypes = [
+                    { value: '', label: 'Sélectionner un type' },
+                    ...typesData.map((type) => ({
+                        value: type.value || type.value?.toLowerCase().replace(/\s/g, '_'),
+                        label: type.label,
+                    }))
+                ];
                 setStructureTypes(dynamicTypes);
 
                 // Récupérer les services
-                const servicesResponse = await api.get('/services'); // Endpoint supposé
-                const dynamicServices = [{ value: '', label: 'Tous les services' },
-                                         ...servicesResponse.data.data.map(service => ({
-                                             value: service.id,
-                                             label: service.nom_service
-                                         }))
-                                        ];
+                const servicesResponse = await api.get('/services');
+                const servicesData = servicesResponse.data?.data ?? [];
+                const dynamicServices = [
+                    { value: '', label: 'Tous les services' },
+                    ...servicesData.map((service: { id: string | number; nom_service: string }) => ({
+                        value: service.id,
+                        label: service.nom_service
+                    }))
+                ];
                 setAvailableServices(dynamicServices);
 
                 // Récupérer les assurances
-                const assurancesResponse = await api.get('/assurances'); // Endpoint supposé
-                const dynamicAssurances = [{ value: '', label: 'Toutes les assurances' },
-                                           ...assurancesResponse.data.data.map(assurance => ({
-                                               value: assurance.id,
-                                               label: assurance.nom_assurance
-                                           }))
-                                          ];
+                const assurancesResponse = await api.get('/assurances');
+                const assurancesData = assurancesResponse.data?.data ?? [];
+                const dynamicAssurances = [
+                    { value: '', label: 'Toutes les assurances' },
+                    ...assurancesData.map((assurance: { id: string | number; nom_assurance: string }) => ({
+                        value: assurance.id,
+                        label: assurance.nom_assurance
+                    }))
+                ];
                 setAvailableAssurances(dynamicAssurances);
 
             } catch (err) {
@@ -118,7 +122,7 @@ const SearchResultsPage = () => {
     // ******************************************************
     // FONCTION POUR LA RECHERCHE DE STRUCTURES
     // ******************************************************
-    const handleSearch = async (e) => {
+    const handleSearch = async (e: any) => {
         e.preventDefault();
         setLoadingResults(true);
         setResultsError(null);
@@ -129,8 +133,7 @@ const SearchResultsPage = () => {
                 type: selectedType,
                 service: selectedService,
                 assurance: selectedAssurance,
-                open_now: openNow, // Ajout du filtre "Ouvert maintenant"
-                // Ajoutez userLocation et radius si vous voulez une recherche par proximité
+                open_now: openNow,
                 ...(userLocation && radius && {
                     user_lat: userLocation.latitude,
                     user_lon: userLocation.longitude,
@@ -139,10 +142,13 @@ const SearchResultsPage = () => {
             };
 
             const response = await api.get('/structures/search', { params });
-            setSearchResults(response.data.structures);
+            console.log(response.data); // Pour déboguer la réponse de l'API
+            setSearchResults(response.data.structures || []);
         } catch (err) {
-            console.error("Erreur lors de la recherche des structures:", err);
-            setResultsError(err.response?.data?.message || "Erreur lors de la recherche des structures. Veuillez réessayer.");
+            setResultsError(
+                err.response?.data?.message ||
+                "Erreur lors de la recherche des structures. Veuillez réessayer."
+            );
         } finally {
             setLoadingResults(false);
         }
@@ -262,14 +268,17 @@ const SearchResultsPage = () => {
                                             onChange={(e) => setSelectedType(e.target.value)}
                                             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 appearance-none bg-white"
                                         >
-                                            {structureTypes.map((type) => (
-                                                <option key={type.value} value={type.value}>
-                                                    {type.label}
+                                            {structureTypes.map((type, idx) => (
+                                                <option
+                                                    key={type.value !== '' ? type.value : `all-type-${idx}`}
+                                                    value={type.value}
+                                                >
+                                                    {type.label ?? 'Tous les types'}
                                                 </option>
                                             ))}
                                         </select>
                                         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                                            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
                                         </div>
                                     </div>
                                 </div>
@@ -285,12 +294,17 @@ const SearchResultsPage = () => {
                                         onChange={(e) => setSelectedService(e.target.value)}
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 appearance-none bg-white"
                                     >
-                                        {availableServices.map((service) => (
-                                            <option key={service.value} value={service.value}>{service.label}</option>
+                                        {availableServices.map((service, idx) => (
+                                            <option
+                                                key={service.value !== '' ? service.value : `all-service-${idx}`}
+                                                value={service.value}
+                                            >
+                                                {service.label}
+                                            </option>
                                         ))}
                                     </select>
                                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
                                     </div>
                                 </div>
 
@@ -305,12 +319,17 @@ const SearchResultsPage = () => {
                                         onChange={(e) => setSelectedAssurance(e.target.value)}
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 appearance-none bg-white"
                                     >
-                                        {availableAssurances.map((assurance) => (
-                                            <option key={assurance.value} value={assurance.value}>{assurance.label}</option>
+                                        {availableAssurances.map((assurance, idx) => (
+                                            <option
+                                                key={assurance.value !== '' ? assurance.value : `all-assurance-${idx}`}
+                                                value={assurance.value}
+                                            >
+                                                {assurance.label}
+                                            </option>
                                         ))}
                                     </select>
                                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
                                     </div>
                                 </div>
                             </div>
@@ -378,7 +397,7 @@ const SearchResultsPage = () => {
                     {!loadingResults && searchResults.length === 0 && !resultsError && (
                         <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg text-center flex items-center justify-center space-x-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-info">
-                                <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+                                <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
                             </svg>
                             <span>Information : Aucune structure trouvée pour vos critères.</span>
                         </div>

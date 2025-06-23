@@ -1,4 +1,3 @@
-// app/Http/Controllers/TypeStructureController.php
 <?php
 
 namespace App\Http\Controllers;
